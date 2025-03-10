@@ -15,6 +15,8 @@ public class MainController {
 
     @Autowired PublicationRepository publicationRepository;
 
+    @Autowired ReviewRepository reviewRepository;
+
     @GetMapping(path="/game/all")
     public @ResponseBody Iterable<Game> getAllGames() {
         return gameRepository.findAll();
@@ -22,4 +24,7 @@ public class MainController {
 
     @GetMapping(path="/publication/all")
     public @ResponseBody Iterable<Publication> getAllPublications() { return publicationRepository.findAll(); }
+
+    @GetMapping(path="/score/all")
+    public @ResponseBody Iterable<Review> getAllReviews() { return reviewRepository.findAll(); }
 }
