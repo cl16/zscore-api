@@ -8,22 +8,21 @@ import jakarta.persistence.Id;
 public class Game {
 
     @Id
-    @Column(name = "gameId")
-    private Long gameId;
+    private Integer gameId;
     private String title;
 
     protected Game() {}
 
-    public Game(Long gameId, String title) {
+    public Game(Integer gameId, String title) {
         this.gameId = gameId;
         this.title = title;
     }
 
-    public Long getGameId() {
+    public Integer getGameId() {
         return this.gameId;
     }
 
-    public void setGameId(Long gameId) {
+    public void setGameId(Integer gameId) {
         this.gameId = gameId;
     }
 

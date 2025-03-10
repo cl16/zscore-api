@@ -13,8 +13,13 @@ public class MainController {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired PublicationRepository publicationRepository;
+
     @GetMapping(path="/game/all")
     public @ResponseBody Iterable<Game> getAllGames() {
         return gameRepository.findAll();
     }
+
+    @GetMapping(path="/publication/all")
+    public @ResponseBody Iterable<Publication> getAllPublications() { return publicationRepository.findAll(); }
 }
