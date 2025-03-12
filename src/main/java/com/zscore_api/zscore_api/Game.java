@@ -1,36 +1,26 @@
 package com.zscore_api.zscore_api;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Game {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer gameId;
     private String title;
 
-    protected Game() {}
-
     public Game(Integer gameId, String title) {
         this.gameId = gameId;
-        this.title = title;
-    }
-
-    public Integer getGameId() {
-        return this.gameId;
-    }
-
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
         this.title = title;
     }
 }
