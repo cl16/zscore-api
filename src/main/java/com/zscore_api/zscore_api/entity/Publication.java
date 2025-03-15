@@ -1,4 +1,4 @@
-package com.zscore_api.zscore_api;
+package com.zscore_api.zscore_api.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

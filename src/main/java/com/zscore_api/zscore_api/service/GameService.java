@@ -1,5 +1,7 @@
-package com.zscore_api.zscore_api;
+package com.zscore_api.zscore_api.service;
 
+import com.zscore_api.zscore_api.repository.GameRepository;
+import com.zscore_api.zscore_api.entity.Game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

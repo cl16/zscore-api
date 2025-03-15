@@ -1,4 +1,4 @@
-package com.zscore_api.zscore_api;
+package com.zscore_api.zscore_api.key;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
