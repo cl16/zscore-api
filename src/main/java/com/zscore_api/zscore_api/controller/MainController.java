@@ -3,9 +3,11 @@ package com.zscore_api.zscore_api.controller;
 import com.zscore_api.zscore_api.entity.Game;
 import com.zscore_api.zscore_api.entity.Publication;
 import com.zscore_api.zscore_api.entity.Review;
+import com.zscore_api.zscore_api.entity.Stat;
 import com.zscore_api.zscore_api.service.GameService;
 import com.zscore_api.zscore_api.service.PublicationService;
 import com.zscore_api.zscore_api.service.ReviewService;
+import com.zscore_api.zscore_api.service.StatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +32,17 @@ public class MainController {
     @Autowired
     private ReviewService reviewService;
 
+    @Autowired
+    private StatService statService;
+
     @GetMapping(path="/game/all")
-    public @ResponseBody Iterable<Game> getAllGames() {
-        return gameService.getAllGames();
+    public ResponseEntity<Iterable<Game>> getAllGames() {
+        Iterable<Game> result = gameService.getAllGames();
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping(path="/game/{gameId}")
@@ -41,7 +51,7 @@ public class MainController {
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
@@ -51,13 +61,18 @@ public class MainController {
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
     }
 
     @GetMapping(path="/publication/all")
-    public @ResponseBody Iterable<Publication> getAllPublications() {
-        return publicationService.getAllPublications();
+    public ResponseEntity<Iterable<Publication>> getAllPublications() {
+        Iterable<Publication> result = publicationService.getAllPublications();
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
     }
 
     @GetMapping(path="/publication/{pubId}")
@@ -66,13 +81,18 @@ public class MainController {
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
     }
 
     @GetMapping(path="/review/all")
-    public @ResponseBody Iterable<Review> getAllReviews() {
-        return reviewService.getAllReviews();
+    public ResponseEntity<Iterable<Review>> getAllReviews() {
+        Iterable<Review> result = reviewService.getAllReviews();
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
     }
 
     @GetMapping(path="/review/game/{gameId}")
@@ -81,17 +101,42 @@ public class MainController {
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
     }
 
-    @ GetMapping(path="/review/game/title/{gameTitle}")
+    @GetMapping(path="/review/game/title/{gameTitle}")
     public ResponseEntity<Iterable<Review>> getReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
         Iterable<Review> result = reviewService.getReviewsByGameTitle(gameTitle);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/stat/all")
+    public ResponseEntity<Iterable<Stat>> getAllStats() {
+        return new ResponseEntity<>(statService.getAllStats(), HttpStatus.OK);
+    }
+
+    @GetMapping(path="/stat/game/{gameId}")
+    public ResponseEntity<Iterable<Stat>> getStatsByGameId(@PathVariable(value="gameId") Integer gameId) {
+        Iterable<Stat> result = statService.getStatsByGameId(gameId);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/stat/game/title/{gameTitle}")
+    public ResponseEntity<Iterable<Stat>> getStatsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        Iterable<Stat> result = statService.getStatsByGameTitle(gameTitle);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
     }
 }
