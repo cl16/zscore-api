@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -30,6 +31,11 @@ public class MainController {
         return gameRepository.findById(Integer.parseInt(gameId));
     }
 
+    @GetMapping(path="/game/title/{gameTitle}")
+    public @ResponseBody List<Game> getGameByTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        return gameRepository.findByTitle(gameTitle);
+    }
+
     @GetMapping(path="/publication/all")
     public @ResponseBody Iterable<Publication> getAllPublications() { return publicationRepository.findAll(); }
 
@@ -38,6 +44,19 @@ public class MainController {
         return publicationRepository.findById(Integer.parseInt(pubId));
     }
 
-    @GetMapping(path="/score/all")
+    @GetMapping(path="/review/all")
     public @ResponseBody Iterable<Review> getAllReviews() { return reviewRepository.findAll(); }
+
+    @GetMapping(path="/review/game/{gameId}")
+    public @ResponseBody List<Review> getReviewsByGameId(@PathVariable(value="gameId") String gameId) {
+        return reviewRepository.findByIdGameId(Integer.parseInt(gameId));
+    }
+
+    @ GetMapping(path="/review/game/title/{gameTitle}")
+    public @ResponseBody List<Review> getReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        List<Game> gameList = gameRepository.findByTitle(gameTitle);
+        Game game = gameList.get(0);
+        Integer gameId = game.getGameId();
+        return reviewRepository.findByIdGameId(gameId);
+    }
 }
