@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ReviewRepository extends CrudRepository<Review, ReviewKey> {
     List<Review> findByIdGameId(Integer gameId);
+    List<Review> findByGameTitle(String gameTitle);
 }
