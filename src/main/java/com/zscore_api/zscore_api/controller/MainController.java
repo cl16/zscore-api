@@ -4,6 +4,8 @@ import com.zscore_api.zscore_api.entity.Game;
 import com.zscore_api.zscore_api.entity.Publication;
 import com.zscore_api.zscore_api.entity.Review;
 import com.zscore_api.zscore_api.entity.Stat;
+import com.zscore_api.zscore_api.record.StatReview;
+import com.zscore_api.zscore_api.repository.AdvancedRepository;
 import com.zscore_api.zscore_api.service.GameService;
 import com.zscore_api.zscore_api.service.PublicationService;
 import com.zscore_api.zscore_api.service.ReviewService;
@@ -34,6 +36,8 @@ public class MainController {
 
     @Autowired
     private StatService statService;
+    @Autowired
+    private AdvancedRepository advancedRepository;
 
     @GetMapping(path="/game/all")
     public ResponseEntity<Iterable<Game>> getAllGames() {
@@ -138,5 +142,10 @@ public class MainController {
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
+    }
+
+    @GetMapping(path="/stat-review/game/{gameId}")
+    public ResponseEntity<Iterable<StatReview>> getStatReviewsByGameId(@PathVariable(value="gameId") Integer gameId) {
+        return new ResponseEntity<>(advancedRepository.findStatReviewByGameId(gameId), HttpStatus.OK);
     }
 }
