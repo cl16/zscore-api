@@ -1,6 +1,6 @@
 package com.zscore_api.zscore_api.entity;
 
-import com.zscore_api.zscore_api.key.StatKey;
+import com.zscore_api.zscore_api.key.GamePubKey;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import lombok.Data;
 public class Stat {
 
     @EmbeddedId
-    private StatKey id;
+    private GamePubKey id;
 
     @ManyToOne
     @MapsId("gameId")
