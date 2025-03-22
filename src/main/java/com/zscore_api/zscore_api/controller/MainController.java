@@ -153,9 +153,29 @@ public class MainController {
         }
     }
 
+    @GetMapping(path="/stat-review/game/title/{gameTitle}")
+    public ResponseEntity<Iterable<StatReview>> getStatReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        Iterable<StatReview> result = advancedRepository.findStatReviewsByGameTitle(gameTitle);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
     @GetMapping(path="/stat-review/publication/{pubId}")
     public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubId(@PathVariable(value="pubId") Integer pubId) {
         Iterable<StatReview> result = advancedRepository.findStatReviewsByPubId(pubId);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/stat-review/publication/name/{pubName}")
+    public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubName(@PathVariable(value="pubName") String pubName) {
+        Iterable<StatReview> result = advancedRepository.findStatReviewsByPubName(pubName);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
