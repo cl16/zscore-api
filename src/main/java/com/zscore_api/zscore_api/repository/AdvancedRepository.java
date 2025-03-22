@@ -24,5 +24,22 @@ public interface AdvancedRepository extends CrudRepository<Review, GamePubKey> {
         JOIN Publication p ON r.id.pubId = p.pubId
         WHERE r.id.gameId = :gameId
     """)
-    Iterable<StatReview> findStatReviewByGameId(@Param("gameId") Integer gameId);
+    Iterable<StatReview> findStatReviewsByGameId(@Param("gameId") Integer gameId);
+
+    @Query("""
+        SELECT NEW com.zscore_api.zscore_api.record.StatReview(
+            r.id.gameId,
+            r.id.pubId,
+            g.title,
+            p.name,
+            r.score,
+            s.zscore
+            )
+        FROM Review r 
+        JOIN Stat s ON r.id.gameId = s.id.gameId AND r.id.pubId = s.id.pubId
+        JOIN Game g ON r.id.gameId = g.gameId
+        JOIN Publication p ON r.id.pubId = p.pubId
+        WHERE r.id.pubId = :pubId
+    """)
+    Iterable<StatReview> findStatReviewsByPubId(@Param("pubId") Integer pubId);
 }

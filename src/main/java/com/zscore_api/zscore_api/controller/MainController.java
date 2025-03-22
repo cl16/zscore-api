@@ -17,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
@@ -146,6 +145,21 @@ public class MainController {
 
     @GetMapping(path="/stat-review/game/{gameId}")
     public ResponseEntity<Iterable<StatReview>> getStatReviewsByGameId(@PathVariable(value="gameId") Integer gameId) {
-        return new ResponseEntity<>(advancedRepository.findStatReviewByGameId(gameId), HttpStatus.OK);
+        Iterable<StatReview> result = advancedRepository.findStatReviewsByGameId(gameId);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/stat-review/publication/{pubId}")
+    public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubId(@PathVariable(value="pubId") Integer pubId) {
+        Iterable<StatReview> result = advancedRepository.findStatReviewsByPubId(pubId);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
     }
 }
