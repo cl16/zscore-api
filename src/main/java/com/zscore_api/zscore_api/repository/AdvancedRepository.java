@@ -5,6 +5,7 @@ import com.zscore_api.zscore_api.key.GamePubKey;
 import com.zscore_api.zscore_api.record.StatReview;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface AdvancedRepository extends CrudRepository<Review, GamePubKey> {
 
@@ -23,5 +24,5 @@ public interface AdvancedRepository extends CrudRepository<Review, GamePubKey> {
         JOIN Publication p ON r.id.pubId = p.pubId
         WHERE r.id.gameId = :gameId
     """)
-    Iterable<StatReview> findStatReviewByGameId(Integer gameId);
+    Iterable<StatReview> findStatReviewByGameId(@Param("gameId") Integer gameId);
 }
