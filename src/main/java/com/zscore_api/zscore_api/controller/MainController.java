@@ -97,6 +97,20 @@ public class MainController {
         }
     }
 
+    @GetMapping(path="/publication")
+    public ResponseEntity getPublicationsByParams(@RequestParam Map<String, String> params) {
+        try {
+            Iterable<Publication> result = publicationService.getPublicationsByParams(params);
+            if (result.iterator().hasNext()) {
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping(path="/review/all")
     public ResponseEntity<Iterable<Review>> getAllReviews() {
         Iterable<Review> result = reviewService.getAllReviews();

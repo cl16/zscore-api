@@ -30,7 +30,15 @@ public class GameService {
 
     public Iterable<Game> getGamesByParams(Map<String, String> params) throws IllegalArgumentException {
         if (!validRequestParams.containsAll(params.keySet())) {
-            throw new IllegalArgumentException("Invalid request params");
+            throw new IllegalArgumentException("Invalid request parameters");
+        } else if (params.containsKey("title") && params.containsKey("titleContains")) {
+            throw new IllegalArgumentException("Invalid request parameters");
+        } else if (params.containsKey("title")) {
+            return gameRepository.findByTitle(params.get("title"));
+        } else if (params.containsKey("titleContains")) {
+            return gameRepository.findByTitleContains(params.get("titleContains"));
+        } else {
+            throw new IllegalArgumentException("Invalid request parameters");
         }
     }
 }
