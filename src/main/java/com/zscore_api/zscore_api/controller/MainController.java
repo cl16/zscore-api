@@ -17,7 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -68,6 +70,20 @@ public class MainController {
         }
     }
 
+    @GetMapping(path="/game")
+    public ResponseEntity getGamesByParams(@RequestParam Map<String, String> params) {
+        try {
+            Iterable<Game> result = gameService.getGamesByParams(params);
+            if (result.iterator().hasNext()) {
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @GetMapping(path="/publication/all")
     public ResponseEntity<Iterable<Publication>> getAllPublications() {
         Iterable<Publication> result = publicationService.getAllPublications();
@@ -85,6 +101,20 @@ public class MainController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/publication")
+    public ResponseEntity getPublicationsByParams(@RequestParam Map<String, String> params) {
+        try {
+            Iterable<Publication> result = publicationService.getPublicationsByParams(params);
+            if (result.iterator().hasNext()) {
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

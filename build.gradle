@@ -4,6 +4,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
+ext {
+	querydslVersion = '4.4.0'
+}
+
 group = 'com.zscore-api'
 version = '0.0.1-SNAPSHOT'
 
@@ -30,7 +34,22 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 	testCompileOnly 'org.projectlombok:lombok:1.18.36'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+	// querydsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	testAnnotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	testAnnotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 }
+
+/*sourceSets {
+	main {
+		java {
+			srcDirs += 'build/generated/sources/annotationProcessor/java'
+		}
+	}
+}*/
 
 tasks.named('test') {
 	useJUnitPlatform()

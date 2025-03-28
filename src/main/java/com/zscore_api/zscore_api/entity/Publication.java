@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,9 +18,6 @@ public class Publication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pubId;
     private String name;
-
-    public Publication(Integer pubId, String name) {
-        this.pubId = pubId;
-        this.name  = name;
-    }
+    private BigDecimal scoreAvg;
+    private BigDecimal scoreStd;
 }
