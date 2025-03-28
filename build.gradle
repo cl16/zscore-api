@@ -43,13 +43,13 @@ dependencies {
 	testAnnotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 }
 
-sourceSets {
+/*sourceSets {
 	main {
 		java {
 			srcDirs += 'build/generated/sources/annotationProcessor/java'
 		}
 	}
-}
+}*/
 
 tasks.named('test') {
 	useJUnitPlatform()

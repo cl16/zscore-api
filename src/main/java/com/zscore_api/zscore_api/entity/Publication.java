@@ -19,7 +19,7 @@ public class Publication {
     private Integer pubId;
     private String name;
     private BigDecimal scoreAvg;
-    private BigDecimal scoreStddev;
+    private BigDecimal scoreStd;
 
     public Publication(Integer pubId, String name) {
         this.pubId = pubId;

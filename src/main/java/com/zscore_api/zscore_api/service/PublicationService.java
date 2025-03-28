@@ -16,7 +16,9 @@ public class PublicationService {
     @Autowired
     private PublicationRepository publicationRepository;
 
-    Set<String> validRequestParams = new HashSet<>(Arrays.asList("name", "nameContains", "averageAbove", "averageBelow"));
+    Set<String> validRequestParams = new HashSet<>(Arrays.asList(
+            "name", "nameContains", "avgAbove", "avgBelow", "stdAbove", "stdBelow"
+    ));
 
     public Iterable<Publication> getAllPublications() {
         return publicationRepository.findAll();
@@ -43,14 +45,19 @@ public class PublicationService {
         if (params.get("nameContains") != null) {
             predicate.and(publication.name.containsIgnoreCase(params.get("nameContains")));
         }
-        if (params.get("averageAbove") != null) {
-            predicate.and(publication.scoreAvg.gt(new BigDecimal(params.get("averageAbove"))));
+        if (params.get("avgAbove") != null) {
+            predicate.and(publication.scoreAvg.gt(new BigDecimal(params.get("avgAbove"))));
         }
-        if (params.get("averageBelow") != null) {
-            predicate.and(publication.scoreAvg.lt(new BigDecimal(params.get("averageBelow"))));
+        if (params.get("avgBelow") != null) {
+            predicate.and(publication.scoreAvg.lt(new BigDecimal(params.get("avgBelow"))));
+        }
+        if (params.get("stdAbove") != null) {
+            predicate.and(publication.scoreStd.gt(new BigDecimal(params.get("stdAbove"))));
+        }
+        if (params.get("stdBelow") != null) {
+            predicate.and(publication.scoreStd.lt(new BigDecimal(params.get("stdBelow"))));
         }
 
         return publicationRepository.findAll(predicate);
     }
-
 }

@@ -4,6 +4,8 @@ import com.zscore_api.zscore_api.key.GamePubKey;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 public class Stat {
@@ -21,5 +23,5 @@ public class Stat {
     @JoinColumn(name="pub_id")
     private Publication publication;
 
-    private Float zscore;
+    private BigDecimal zscore;
 }
