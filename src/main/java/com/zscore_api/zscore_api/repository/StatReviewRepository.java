@@ -9,4 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface StatReviewRepository extends CrudRepository<StatReview, GamePubKey>,
         QuerydslPredicateExecutor<StatReview>,
         JpaRepository<StatReview, GamePubKey>  {
+
+    Iterable<StatReview> findByIdGameId(Integer gameId);
+
+    Iterable<StatReview> findByIdPubId(Integer pubId);
 }

@@ -1,12 +1,6 @@
 package com.zscore_api.zscore_api.controller;
 
-import com.zscore_api.zscore_api.entity.Game;
-import com.zscore_api.zscore_api.entity.Publication;
-import com.zscore_api.zscore_api.entity.Review;
-import com.zscore_api.zscore_api.entity.Stat;
-import com.zscore_api.zscore_api.record.StatReview;
-import com.zscore_api.zscore_api.repository.AdvancedRepository;
-import com.zscore_api.zscore_api.repository.StatReviewRepository;
+import com.zscore_api.zscore_api.entity.*;
 import com.zscore_api.zscore_api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,20 +20,12 @@ public class MainController {
 
     @Autowired
     private GameService gameService;
-
     @Autowired
     private PublicationService publicationService;
-
     @Autowired
     private ReviewService reviewService;
-
     @Autowired
     private StatService statService;
-    @Autowired
-    private AdvancedRepository advancedRepository;
-
-    @Autowired
-    private StatReviewRepository statReviewRepository;
     @Autowired
     private StatReviewService statReviewService;
 
@@ -177,56 +162,20 @@ public class MainController {
         }
     }
 
-    @GetMapping(path="/stat-review/game/{gameId}")
-    public ResponseEntity<Iterable<StatReview>> getStatReviewsByGameId(@PathVariable(value="gameId") Integer gameId) {
-        Iterable<StatReview> result = advancedRepository.findStatReviewsByGameId(gameId);
-        if (result.iterator().hasNext()) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
-        }
-    }
-
-    @GetMapping(path="/stat-review/game/title/{gameTitle}")
-    public ResponseEntity<Iterable<StatReview>> getStatReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
-        Iterable<StatReview> result = advancedRepository.findStatReviewsByGameTitle(gameTitle);
-        if (result.iterator().hasNext()) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
-        }
-    }
-
-    @GetMapping(path="/stat-review/publication/{pubId}")
-    public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubId(@PathVariable(value="pubId") Integer pubId) {
-        Iterable<StatReview> result = advancedRepository.findStatReviewsByPubId(pubId);
-        if (result.iterator().hasNext()) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
-        }
-    }
-
-    @GetMapping(path="/stat-review/publication/name/{pubName}")
-    public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubName(@PathVariable(value="pubName") String pubName) {
-        Iterable<StatReview> result = advancedRepository.findStatReviewsByPubName(pubName);
-        if (result.iterator().hasNext()) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
-        }
-    }
-
     @GetMapping(path="/stat-review")
-    public ResponseEntity<Optional<com.zscore_api.zscore_api.entity.StatReview>> getStatReviewById(
-            @RequestParam Integer gameId,
-            @RequestParam Integer pubId
+    public ResponseEntity getStatReviewById(
+            @RequestParam(required = false) Integer gameId,
+            @RequestParam(required = false) Integer pubId
     ) {
-        Optional<com.zscore_api.zscore_api.entity.StatReview> result = statReviewService.getStatReviewById(gameId, pubId);
-        if (result.isPresent()) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        try {
+            Iterable<StatReview> result = statReviewService.getStatReviewById(gameId, pubId);
+            if (result.iterator().hasNext()) {
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
