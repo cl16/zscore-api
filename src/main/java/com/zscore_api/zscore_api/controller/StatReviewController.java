@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/statReview")
 public class StatReviewController {
@@ -17,16 +19,18 @@ public class StatReviewController {
     @Autowired
     private StatReviewService statReviewService;
 
-    @GetMapping
-    public ResponseEntity getStatReviewById(
-            @RequestParam(required = false) Integer gameId,
-            @RequestParam(required = false) Integer pubId
-    ) {
-        Iterable<StatReview> result = statReviewService.getStatReviewById(gameId, pubId);
+    @GetMapping(path="")
+    public ResponseEntity getStatReviewById(@RequestParam Map<String, String> params) {
+        Iterable<StatReview> result = statReviewService.getStatReviewsByParams(params);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
+    }
+
+    @GetMapping(path="/test")
+    public ResponseEntity testStatReview() {
+        return ResponseEntity.status(HttpStatus.OK).body("This worked!!!");
     }
 }
