@@ -4,11 +4,14 @@ import com.zscore_api.zscore_api.key.GamePubKey;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 @Entity
-public class Review {
+@Table(name = "review")
+@SecondaryTable(name = "stat")
+public class StatReview {
 
     @EmbeddedId
     private GamePubKey id;
@@ -23,7 +26,12 @@ public class Review {
     @JoinColumn(name="pub_id")
     private Publication publication;
 
+    @Column(table = "review")
+    private Date date;
+
+    @Column(table = "review")
     private Integer score;
 
-    private Date date;
+    @Column(table = "stat")
+    private BigDecimal zscore;
 }

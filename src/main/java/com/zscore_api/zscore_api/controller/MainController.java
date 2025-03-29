@@ -6,10 +6,8 @@ import com.zscore_api.zscore_api.entity.Review;
 import com.zscore_api.zscore_api.entity.Stat;
 import com.zscore_api.zscore_api.record.StatReview;
 import com.zscore_api.zscore_api.repository.AdvancedRepository;
-import com.zscore_api.zscore_api.service.GameService;
-import com.zscore_api.zscore_api.service.PublicationService;
-import com.zscore_api.zscore_api.service.ReviewService;
-import com.zscore_api.zscore_api.service.StatService;
+import com.zscore_api.zscore_api.repository.StatReviewRepository;
+import com.zscore_api.zscore_api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,6 +38,11 @@ public class MainController {
     private StatService statService;
     @Autowired
     private AdvancedRepository advancedRepository;
+
+    @Autowired
+    private StatReviewRepository statReviewRepository;
+    @Autowired
+    private StatReviewService statReviewService;
 
     @GetMapping(path="/game/all")
     public ResponseEntity<Iterable<Game>> getAllGames() {
@@ -207,6 +211,19 @@ public class MainController {
     public ResponseEntity<Iterable<StatReview>> getStatReviewsByPubName(@PathVariable(value="pubName") String pubName) {
         Iterable<StatReview> result = advancedRepository.findStatReviewsByPubName(pubName);
         if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/stat-review")
+    public ResponseEntity<Optional<com.zscore_api.zscore_api.entity.StatReview>> getStatReviewById(
+            @RequestParam Integer gameId,
+            @RequestParam Integer pubId
+    ) {
+        Optional<com.zscore_api.zscore_api.entity.StatReview> result = statReviewService.getStatReviewById(gameId, pubId);
+        if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
