@@ -1,6 +1,7 @@
 package com.zscore_api.zscore_api.controller;
 
 import com.zscore_api.zscore_api.entity.Review;
+import com.zscore_api.zscore_api.record.GameAverageScore;
 import com.zscore_api.zscore_api.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,5 +46,10 @@ public class ReviewController {
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
+    }
+
+    @GetMapping(path="/game/byAverageScore")
+    public ResponseEntity<Iterable<GameAverageScore>> getGamesByAverageScore() {
+        return new ResponseEntity<>(reviewService.getAllGamesByAverageScore(), HttpStatus.OK);
     }
 }

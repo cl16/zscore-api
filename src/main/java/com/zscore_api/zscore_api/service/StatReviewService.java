@@ -30,7 +30,6 @@ public class StatReviewService {
     Set<String> pubDefiningParams = new HashSet<>(Arrays.asList("pubId", "pubName", "pubNameContains"));
 
     public Iterable<StatReview> getStatReviewById(Integer gameId, Integer pubId) throws IllegalArgumentException {
-
         if (gameId != null && pubId != null) {
             Optional<StatReview> result = statReviewRepository.findById(new GamePubKey(gameId, pubId));
             if (result.isPresent()) {
