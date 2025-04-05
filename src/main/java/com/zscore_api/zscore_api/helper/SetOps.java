@@ -10,4 +10,10 @@ public class SetOps {
         copy.retainAll(setB);
         return copy.size();
     }
+
+    public static Set<String> union(Set<String> setA, Set<String> setB) {
+        Set<String> copy = new HashSet<>(setA);
+        copy.addAll(setB);
+        return copy;
+    }
 }

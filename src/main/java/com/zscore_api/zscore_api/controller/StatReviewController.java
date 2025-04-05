@@ -3,6 +3,7 @@ package com.zscore_api.zscore_api.controller;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.service.StatReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,17 +21,12 @@ public class StatReviewController {
     private StatReviewService statReviewService;
 
     @GetMapping(path="")
-    public ResponseEntity getStatReviewById(@RequestParam Map<String, String> params) {
-        Iterable<StatReview> result = statReviewService.getStatReviewsByParams(params);
+    public ResponseEntity getStatReviewById(@RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<StatReview> result = statReviewService.getStatReviewsByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
         }
-    }
-
-    @GetMapping(path="/test")
-    public ResponseEntity testStatReview() {
-        return ResponseEntity.status(HttpStatus.OK).body("This worked!!!");
     }
 }

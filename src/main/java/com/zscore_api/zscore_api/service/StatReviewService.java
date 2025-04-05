@@ -9,6 +9,7 @@ import com.zscore_api.zscore_api.repository.StatReviewRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,6 +21,8 @@ public class StatReviewService {
 
     @Autowired
     private StatReviewRepository statReviewRepository;
+
+    Set<String> genericParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
 
     Set<String> validRequestParams = new HashSet<>(Arrays.asList(
             "gameId", "pubId", "gameTitle", "gameTitleContains", "pubName", "pubNameContains",
@@ -46,7 +49,7 @@ public class StatReviewService {
         }
     }
 
-    public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params) {
+    public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {
         logger.info("getStatReviewsByParams params: " + params);
         this.checkValidRequestParams(params);
 
@@ -78,11 +81,12 @@ public class StatReviewService {
             predicate.and(statReview.score.lt((Integer.parseInt(params.get("scoreBelow")))));
         }
 
-        return statReviewRepository.findAll(predicate);
+        return statReviewRepository.findAll(predicate, pageable);
     }
 
     private void checkValidRequestParams(Map<String, String> params) {
-        if (!validRequestParams.containsAll(params.keySet())) {
+        Set<String> expectedParams = SetOps.union(this.genericParams, this.validRequestParams);
+        if (!expectedParams.containsAll(params.keySet())) {
             throw new IllegalArgumentException("Invalid request parameters");
         }
         if (SetOps.numIntersecting(params.keySet(), this.gameDefiningParams) > 1) {
