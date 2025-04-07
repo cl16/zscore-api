@@ -3,6 +3,7 @@ package com.zscore_api.zscore_api.service;
 import com.querydsl.core.BooleanBuilder;
 import com.zscore_api.zscore_api.entity.QStatReview;
 import com.zscore_api.zscore_api.entity.StatReview;
+import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.helper.SetOps;
 import com.zscore_api.zscore_api.key.GamePubKey;
 import com.zscore_api.zscore_api.repository.StatReviewRepository;
@@ -95,5 +96,9 @@ public class StatReviewService {
         if (SetOps.numIntersecting(params.keySet(), this.pubDefiningParams) > 1) {
             throw new IllegalArgumentException("Invalid request parameters");
         }
+    }
+
+    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages() {
+        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages();
     }
 }
