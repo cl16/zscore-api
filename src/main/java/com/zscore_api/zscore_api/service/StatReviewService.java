@@ -99,7 +99,7 @@ public class StatReviewService {
         }
     }
 
-    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Pageable pageable) {
-        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(pageable);
+    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(String minReviewCount, Pageable pageable) {
+        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(Integer.parseInt(minReviewCount), pageable);
     }
 }

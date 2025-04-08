@@ -29,8 +29,9 @@ public interface StatReviewRepository extends
                 JOIN stat s ON r.game_id = s.game_id AND r.pub_id = s.pub_id
                 JOIN game g ON r.game_id = g.game_id
                 GROUP BY g.game_id
+                HAVING reviewCount > :minReviewCount
             """,
             nativeQuery = true
     )
-    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(Pageable pageable);
+    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(Integer minReviewCount, Pageable pageable);
 }
