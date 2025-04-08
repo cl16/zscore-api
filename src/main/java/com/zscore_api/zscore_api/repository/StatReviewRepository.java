@@ -3,6 +3,7 @@ package com.zscore_api.zscore_api.repository;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.key.GamePubKey;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -22,18 +23,14 @@ public interface StatReviewRepository extends
     Iterable<StatReview> findByIdPubId(Integer pubId);
 
     @Query(
-            """
-            SELECT new com.zscore_api.zscore_api.entity.StatReviewWithGameDTO(
-                sr.game.gameId,
-                sr.game.title,
-                AVG(sr.score),
-                AVG(sr.zscore),
-                COUNT(*)
-            )
-            FROM StatReview sr
-            JOIN Game g ON sr.game.gameId = g.gameId
-            GROUP BY g.gameId
-            """
+            value = """
+                SELECT g.game_id, g.title, AVG(r.score) AS avgScore, AVG(s.zscore) AS avgZscore, COUNT(*) AS reviewCount
+                FROM review r
+                JOIN stat s ON r.game_id = s.game_id AND r.pub_id = s.pub_id
+                JOIN game g ON r.game_id = g.game_id
+                GROUP BY g.game_id
+            """,
+            nativeQuery = true
     )
-    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages();
+    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(Pageable pageable);
 }

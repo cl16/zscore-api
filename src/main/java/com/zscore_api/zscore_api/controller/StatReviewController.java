@@ -32,8 +32,8 @@ public class StatReviewController {
     }
 
     @GetMapping(path="/gameAverages")
-    public ResponseEntity getAllStatReviewGameGroupsWithAverages() {
-        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages();
+    public ResponseEntity getAllStatReviewGameGroupsWithAverages(Pageable pageable) {
+        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages(pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

@@ -2,16 +2,18 @@ package com.zscore_api.zscore_api.entity;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class StatReviewWithGameDTO {
 
     private Integer gameId;
     private String title;
-    private Double averageScore;
-    private Double averageZscore;
+    private BigDecimal averageScore;
+    private BigDecimal averageZscore;
     private Long numberOfReviews;
 
-    public StatReviewWithGameDTO(Integer gameId, String title, Double averageScore, Double averageZscore, Long numberOfReviews) {
+    public StatReviewWithGameDTO(Integer gameId, String title, BigDecimal averageScore, BigDecimal averageZscore, Long numberOfReviews) {
         this.gameId = gameId;
         this.title = title;
         this.averageScore = averageScore;

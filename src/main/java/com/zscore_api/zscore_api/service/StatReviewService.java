@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -98,7 +99,7 @@ public class StatReviewService {
         }
     }
 
-    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages() {
-        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages();
+    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Pageable pageable) {
+        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(pageable);
     }
 }
