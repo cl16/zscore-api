@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -24,11 +23,15 @@ public class StatReviewService {
     @Autowired
     private StatReviewRepository statReviewRepository;
 
-    Set<String> genericParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
+    Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
 
-    Set<String> validRequestParams = new HashSet<>(Arrays.asList(
+    Set<String> statReviewParams = new HashSet<>(Arrays.asList(
             "gameId", "pubId", "gameTitle", "gameTitleContains", "pubName", "pubNameContains",
             "scoreAbove", "scoreBelow"
+    ));
+
+    Set<String> statReviewGroupParams = new HashSet<>(Arrays.asList(
+            "minReviewCount", "minAvgScore", "maxAvgScore", "minAvgZscore", "maxAvgZscore"
     ));
 
     Set<String> gameDefiningParams = new HashSet<>(Arrays.asList("gameId", "gameTitle", "gameTitleContains"));
@@ -53,7 +56,8 @@ public class StatReviewService {
 
     public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {
         logger.info("getStatReviewsByParams params: " + params);
-        this.checkValidRequestParams(params);
+        this.validateParamsAgainstExpected(params, this.statReviewParams);
+        this.enforceStatReviewRequestParamLogicRules(params);
 
         QStatReview statReview = QStatReview.statReview;
         BooleanBuilder predicate = new BooleanBuilder();
@@ -86,11 +90,15 @@ public class StatReviewService {
         return statReviewRepository.findAll(predicate, pageable);
     }
 
-    private void checkValidRequestParams(Map<String, String> params) {
-        Set<String> expectedParams = SetOps.union(this.genericParams, this.validRequestParams);
-        if (!expectedParams.containsAll(params.keySet())) {
-            throw new IllegalArgumentException("Invalid request parameters");
+    private void validateParamsAgainstExpected(Map<String, String> params, Set<String> expected) throws IllegalArgumentException {
+        Set<String> allExpected = SetOps.union(this.pagingAndSortingParams, expected);
+        if (!allExpected.containsAll(params.keySet())) {
+            Set<String> unexpected = SetOps.subtract(params.keySet(), allExpected);
+            throw new IllegalArgumentException("Invalid request parameters: " + String.join(", ", unexpected));
         }
+    }
+
+    private void enforceStatReviewRequestParamLogicRules(Map<String, String> params) {
         if (SetOps.numIntersecting(params.keySet(), this.gameDefiningParams) > 1) {
             throw new IllegalArgumentException("Invalid request parameters");
         }
@@ -99,7 +107,74 @@ public class StatReviewService {
         }
     }
 
-    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(String minReviewCount, Pageable pageable) {
-        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(Integer.parseInt(minReviewCount), pageable);
+    private void enforceStatReviewGroupRequestParamLogicRules(Map<String, String> params) {
+        // Check values are numeric
+        Set<String> nonPagingAndSortingKeys = SetOps.subtract(new HashSet<>(params.keySet()), this.pagingAndSortingParams); // wrong, need to get values for keys not in pagingAndSorting
+        for (String key : nonPagingAndSortingKeys) {
+            String value = params.get(key);
+            if (!value.matches("^-?[0-9]+\\.?[0-9]*$")) {
+                throw new IllegalArgumentException("Request parameter value must be numeric, failed value: " + value);
+            }
+        }
+
+        // Check values within accepted ranges
+        if (params.containsKey("minReviewCount") && Float.parseFloat(params.get("minReviewCount")) < 0) {
+            throw new IllegalArgumentException("minReviewCount must be greater than 0");
+        }
+        if (params.containsKey("minAvgScore")) {
+            if (Float.parseFloat(params.get("minAvgScore")) < 0 || (Float.parseFloat(params.get("minAvgScore")) >= 100)) {
+                throw new IllegalArgumentException("minAvgScore must be greater than or equal to 0, and less than 100");
+            }
+        }
+        if (params.containsKey("maxAvgScore")) {
+            if (Float.parseFloat(params.get("maxAvgScore")) <= 0 || Float.parseFloat(params.get("maxAvgScore")) > 100) {
+                throw new IllegalArgumentException("maxAvgScore must be greater than 0, and less than or equal to 100");
+            }
+        }
+    }
+
+    private Map<String, Float> convertStatReviewGroupParamsWithDefaults(Map<String, String> params) {
+        Map<String, Float> checkedParams = new HashMap<>();
+        if (!params.containsKey("minReviewCount")) {
+            checkedParams.put("minReviewCount", 4f);
+        } else {
+            checkedParams.put("minReviewCount", Float.parseFloat(params.get("minReviewCount")));
+        }
+        if (!params.containsKey("minAvgScore")) {
+            checkedParams.put("minAvgScore", 0f);
+        } else {
+            checkedParams.put("minAvgScore", Float.parseFloat(params.get("minAvgScore")));
+        }
+        if (!params.containsKey("maxAvgScore")) {
+            checkedParams.put("maxAvgScore", 100f);
+        } else {
+            checkedParams.put("maxAvgScore", Float.parseFloat(params.get("maxAvgScore")));
+        }
+        if (!params.containsKey("minAvgZscore")) {
+            checkedParams.put("minAvgZscore", -100f); // just number that won't exclude practical min zscore in data
+        } else {
+            checkedParams.put("minAvgZscore", Float.parseFloat(params.get("minAvgZscore")));
+        }
+        if (!params.containsKey("maxAvgZscore")) {
+            checkedParams.put("maxAvgZscore", 100f); // just number that won't exclude practical max zscore in data
+        } else {
+            checkedParams.put("maxAvgZscore", Float.parseFloat(params.get("maxAvgZscore")));
+        }
+        return checkedParams;
+    }
+
+    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Map<String, String> params, Pageable pageable) {
+        logger.info("getAllStatReviewGameGroupsWithAverages params: " + params);
+        this.validateParamsAgainstExpected(params, this.statReviewGroupParams);
+        this.enforceStatReviewGroupRequestParamLogicRules(params);
+        Map<String, Float> convertedParams = this.convertStatReviewGroupParamsWithDefaults(params);
+        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(
+                convertedParams.get("minReviewCount"),
+                convertedParams.get("minAvgScore"),
+                convertedParams.get("maxAvgScore"),
+                convertedParams.get("minAvgZscore"),
+                convertedParams.get("maxAvgZscore"),
+                pageable
+        );
     }
 }

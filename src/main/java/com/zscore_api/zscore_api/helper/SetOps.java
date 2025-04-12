@@ -16,4 +16,10 @@ public class SetOps {
         copy.addAll(setB);
         return copy;
     }
+
+    public static Set<String> subtract(Set<String> setA, Set<String> setB) {
+        Set<String> copy = new HashSet<>(setA);
+        copy.removeAll(setB);
+        return copy;
+    }
 }

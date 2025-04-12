@@ -33,8 +33,8 @@ public class StatReviewController {
     }
 
     @GetMapping(path="/gameAverages")
-    public ResponseEntity getAllStatReviewGameGroupsWithAverages(@RequestParam(name = "minReviewCount", defaultValue = "4") String minReviewCount, Pageable pageable) {
-        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages(minReviewCount, pageable);
+    public ResponseEntity getAllStatReviewGameGroupsWithAverages(@RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

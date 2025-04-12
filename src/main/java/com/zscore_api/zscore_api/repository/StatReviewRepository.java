@@ -29,9 +29,16 @@ public interface StatReviewRepository extends
                 JOIN stat s ON r.game_id = s.game_id AND r.pub_id = s.pub_id
                 JOIN game g ON r.game_id = g.game_id
                 GROUP BY g.game_id
-                HAVING reviewCount > :minReviewCount
+                HAVING (reviewCount >= :minReviewCount) AND (avgScore BETWEEN :minAvgScore AND :maxAvgScore) AND (avgZscore BETWEEN :minAvgZscore AND :maxAvgZscore)
             """,
             nativeQuery = true
     )
-    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(Integer minReviewCount, Pageable pageable);
+    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(
+            Float minReviewCount,
+            Float minAvgScore,
+            Float maxAvgScore,
+            Float minAvgZscore,
+            Float maxAvgZscore,
+            Pageable pageable
+    );
 }
