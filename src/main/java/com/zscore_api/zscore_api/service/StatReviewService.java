@@ -29,13 +29,15 @@ public class StatReviewService {
             "gameId", "pubId", "gameTitle", "gameTitleContains", "pubName", "pubNameContains",
             "scoreAbove", "scoreBelow"
     ));
+    Set<String> gameDefiningParams = new HashSet<>(Arrays.asList("gameId", "gameTitle", "gameTitleContains"));
+    Set<String> pubDefiningParams = new HashSet<>(Arrays.asList("pubId", "pubName", "pubNameContains"));
 
     Set<String> statReviewGroupParams = new HashSet<>(Arrays.asList(
             "minReviewCount", "minAvgScore", "maxAvgScore", "minAvgZscore", "maxAvgZscore"
     ));
+    Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList("avgScore", "avgZscore"));
 
-    Set<String> gameDefiningParams = new HashSet<>(Arrays.asList("gameId", "gameTitle", "gameTitleContains"));
-    Set<String> pubDefiningParams = new HashSet<>(Arrays.asList("pubId", "pubName", "pubNameContains"));
+
 
     public Iterable<StatReview> getStatReviewById(Integer gameId, Integer pubId) throws IllegalArgumentException {
         if (gameId != null && pubId != null) {
@@ -109,11 +111,24 @@ public class StatReviewService {
 
     private void enforceStatReviewGroupRequestParamLogicRules(Map<String, String> params) {
         // Check values are numeric
-        Set<String> nonPagingAndSortingKeys = SetOps.subtract(new HashSet<>(params.keySet()), this.pagingAndSortingParams); // wrong, need to get values for keys not in pagingAndSorting
+        Set<String> nonPagingAndSortingKeys = SetOps.subtract(new HashSet<>(params.keySet()), this.pagingAndSortingParams);
         for (String key : nonPagingAndSortingKeys) {
             String value = params.get(key);
             if (!value.matches("^-?[0-9]+\\.?[0-9]*$")) {
                 throw new IllegalArgumentException("Request parameter value must be numeric, failed value: " + value);
+            }
+        }
+
+        // Validate sort argument
+        if (params.containsKey("sort")) {
+            String[] sortArg = params.get("sort").split(",");
+            if (!this.statReviewGroupSortArgs.contains(sortArg[0])) {
+                throw new IllegalArgumentException("Invalid argument for sort attribute, must be avgScore or avgZscore");
+            }
+            if (sortArg.length > 1) {
+                if (!(sortArg[1].equals("asc") || sortArg[1].equals("desc"))) {
+                    throw new IllegalArgumentException("Invalid argument for sort order, must be asc or desc");
+                }
             }
         }
 
@@ -129,6 +144,18 @@ public class StatReviewService {
         if (params.containsKey("maxAvgScore")) {
             if (Float.parseFloat(params.get("maxAvgScore")) <= 0 || Float.parseFloat(params.get("maxAvgScore")) > 100) {
                 throw new IllegalArgumentException("maxAvgScore must be greater than 0, and less than or equal to 100");
+            }
+        }
+
+        if (params.containsKey("minAvgScore") && params.containsKey("maxAvgScore")) {
+            if (Float.parseFloat(params.get("minAvgScore")) > Float.parseFloat(params.get("maxAvgScore"))) {
+                throw new IllegalArgumentException("minAvgScore argument must be <= maxAvgScore argument");
+            }
+        }
+
+        if (params.containsKey("minAvgZscore") && params.containsKey("maxAvgZscore")) {
+            if (Float.parseFloat(params.get("minAvgZscore")) > Float.parseFloat(params.get("maxAvgZscore"))) {
+                throw new IllegalArgumentException("minAvgZscore argument must be <= maxAvgZscore argument");
             }
         }
     }
