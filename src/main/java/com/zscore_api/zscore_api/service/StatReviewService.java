@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.zscore_api.zscore_api.entity.QStatReview;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
+import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.helper.SetOps;
 import com.zscore_api.zscore_api.key.GamePubKey;
 import com.zscore_api.zscore_api.repository.StatReviewRepository;
@@ -119,19 +120,6 @@ public class StatReviewService {
             }
         }
 
-        // Validate sort argument
-        if (params.containsKey("sort")) {
-            String[] sortArg = params.get("sort").split(",");
-            if (!this.statReviewGroupSortArgs.contains(sortArg[0])) {
-                throw new IllegalArgumentException("Invalid argument for sort attribute, must be avgScore or avgZscore");
-            }
-            if (sortArg.length > 1) {
-                if (!(sortArg[1].equals("asc") || sortArg[1].equals("desc"))) {
-                    throw new IllegalArgumentException("Invalid argument for sort order, must be asc or desc");
-                }
-            }
-        }
-
         // Check values within accepted ranges
         if (params.containsKey("minReviewCount") && Float.parseFloat(params.get("minReviewCount")) < 0) {
             throw new IllegalArgumentException("minReviewCount must be greater than 0");
@@ -191,8 +179,9 @@ public class StatReviewService {
     }
 
     public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Map<String, String> params, Pageable pageable) {
-        logger.info("getAllStatReviewGameGroupsWithAverages params: " + params);
+        logger.info("getAllStatReviewGameGroupsWithAverages params: {}", params);
         this.validateParamsAgainstExpected(params, this.statReviewGroupParams);
+        ParamValidator.validatePagingAndSortingArgs(params, statReviewGroupSortArgs);
         this.enforceStatReviewGroupRequestParamLogicRules(params);
         Map<String, Float> convertedParams = this.convertStatReviewGroupParamsWithDefaults(params);
         return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(

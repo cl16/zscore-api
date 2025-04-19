@@ -5,7 +5,6 @@ import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.service.StatReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +22,7 @@ public class StatReviewController {
     private StatReviewService statReviewService;
 
     @GetMapping(path="")
-    public ResponseEntity getStatReviewById(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity getStatReviewsByParams(@RequestParam Map<String, String> params, Pageable pageable) {
         Iterable<StatReview> result = statReviewService.getStatReviewsByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
