@@ -52,6 +52,13 @@ public class ParamValidator {
         }
     }
 
+    public static void blockAllRequestParams(Map<String, String> params) {
+        Set<String> providedParams = params.keySet();
+        if (!providedParams.isEmpty()) {
+            throw new IllegalArgumentException("Invalid request parameters: " + String.join(", ", providedParams));
+        }
+    }
+
     public static Set<String> nonPagingAndSortingParams(Set<String> params) {
         return SetOps.subtract(params, pagingAndSortingParams);
     }
