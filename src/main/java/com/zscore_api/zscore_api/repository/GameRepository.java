@@ -1,13 +1,16 @@
 package com.zscore_api.zscore_api.repository;
 
 import com.zscore_api.zscore_api.entity.Game;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface GameRepository extends CrudRepository<Game, Integer> {
+public interface GameRepository extends CrudRepository<Game, Integer>,
+        PagingAndSortingRepository<Game, Integer> {
 
-    List<Game> findByTitle(String title);
+    List<Game> findByTitle(String title, Pageable pageable);
 
-    List<Game> findByTitleContains(String title);
+    List<Game> findByTitleContains(String title, Pageable pageable);
 }
