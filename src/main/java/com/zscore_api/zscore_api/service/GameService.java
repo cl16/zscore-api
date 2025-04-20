@@ -24,7 +24,7 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
-    public Optional<Game> getGameById(Map<String, String> params, Integer gameId) {
+    public Optional<Game> getGameById(Integer gameId, Map<String, String> params) {
         ParamValidator.blockAllRequestParams(params);
         return gameRepository.findById(gameId);
     }

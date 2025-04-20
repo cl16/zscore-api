@@ -16,6 +16,8 @@ public class ParamValidator {
     private static final String pageArgPatternString = "0|[1-9][0-9]*";
     private static final String sortArgPatternString = "([a-zA-Z]+)(,(?:asc|desc))?";
 
+    private static final String numericPatternString = "^-?[0-9]+\\.?[0-9]*$";
+
     public static void validatePagingAndSortingArgs(Map<String, String> params, Set<String> validSortArgs) {
         if (params.containsKey("page")) {
             if (!params.get("page").matches(pageArgPatternString)) {
@@ -61,5 +63,45 @@ public class ParamValidator {
 
     public static Set<String> nonPagingAndSortingParams(Set<String> params) {
         return SetOps.subtract(params, pagingAndSortingParams);
+    }
+
+    public static void validateNumericArg(String param, String arg) {
+        if (!arg.matches(numericPatternString)) {
+            throw new IllegalArgumentException(String.format("Invalid argument type: param %s has non-numeric type %s", param, arg));
+        }
+    }
+
+    public static void validateNumericRange(String param, String arg, Float min, Float max) {
+        float argFloat = Float.parseFloat(arg);
+        if (!(argFloat >= min) || !(argFloat <= max)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid argument values: param %s value %s must be between %s and %s, inclusive",
+                    param,
+                    arg,
+                    min,
+                    max
+            ));
+        }
+    }
+
+    /**
+     * Validate that argMin is less than or equal to argMax. If not, throw IllegalArgumentException with param names in message.
+     * @param paramMin Parameter name for minimum value
+     * @param paramMax Parameter name for maximum value
+     * @param argMin Minimum value
+     * @param argMax Maximum value
+     */
+    public static void validateMinLTEMax(String paramMin, String paramMax, String argMin, String argMax) {
+        float argMinFloat = Float.parseFloat(argMin);
+        float argMaxFloat = Float.parseFloat(argMax);
+        if (!(argMinFloat <= argMaxFloat)) {
+            throw new IllegalArgumentException(String.format(
+                    "Invalid argument values: %s value %s must be less then or equal to %s value %s",
+                    paramMin,
+                    argMin,
+                    paramMax,
+                    argMax
+            ));
+        }
     }
 }

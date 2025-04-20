@@ -1,10 +1,13 @@
 package com.zscore_api.zscore_api.service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Param;
 import com.zscore_api.zscore_api.entity.QPublication;
+import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.repository.PublicationRepository;
 import com.zscore_api.zscore_api.entity.Publication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,47 +20,94 @@ public class PublicationService {
     private PublicationRepository publicationRepository;
 
     Set<String> validRequestParams = new HashSet<>(Arrays.asList(
-            "name", "nameContains", "avgAbove", "avgBelow", "stdAbove", "stdBelow"
+            "name", "nameContains", "minScoreAvg", "maxScoreAvg", "minScoreStd", "maxScoreStd"
     ));
+    Set<String> sortArgs = new HashSet<>(Arrays.asList("name", "scoreAvg", "scoreStd"));
 
-    public Iterable<Publication> getAllPublications() {
-        return publicationRepository.findAll();
+    public Iterable<Publication> getAllPublications(Map<String, String> params, Pageable pageable) {
+        ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
+        ParamValidator.validateDomainRequestParams(params, new HashSet<>());
+        return publicationRepository.findAll(pageable);
     }
 
-    public Optional<Publication> getPublicationById(Integer id) {
+    public Optional<Publication> getPublicationById(Integer id, Map<String, String> params) {
+        ParamValidator.blockAllRequestParams(params);
         return publicationRepository.findById(id);
     }
 
-    public Iterable<Publication> getPublicationsByParams(Map<String, String> params) throws IllegalArgumentException {
-        if (!validRequestParams.containsAll(params.keySet())) {
-            throw new IllegalArgumentException("Invalid request parameters");
-        }
-        if (params.containsKey("name") && params.containsKey("nameContains")) {
-            throw new IllegalArgumentException("Invalid request parameters");
-        }
+    public Iterable<Publication> getPublicationsByParams(Map<String, String> params, Pageable pageable) {
+        ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
+        ParamValidator.validateDomainRequestParams(params, validRequestParams);
+        this.validateRequestParamLogicRules(params);
 
         QPublication publication = QPublication.publication;
         BooleanBuilder predicate = new BooleanBuilder();
 
-        if (params.get("name") != null) {
+        if (params.containsKey("name")) {
             predicate.and(publication.name.eq(params.get("name")));
         }
-        if (params.get("nameContains") != null) {
+        if (params.containsKey("nameContains")) {
             predicate.and(publication.name.containsIgnoreCase(params.get("nameContains")));
         }
-        if (params.get("avgAbove") != null) {
-            predicate.and(publication.scoreAvg.gt(new BigDecimal(params.get("avgAbove"))));
+        if (params.containsKey("minScoreAvg")) {
+            predicate.and(publication.scoreAvg.goe(new BigDecimal(params.get("minScoreAvg"))));
         }
-        if (params.get("avgBelow") != null) {
-            predicate.and(publication.scoreAvg.lt(new BigDecimal(params.get("avgBelow"))));
+        if (params.containsKey("maxScoreAvg")) {
+            predicate.and(publication.scoreAvg.loe(new BigDecimal(params.get("maxScoreAvg"))));
         }
-        if (params.get("stdAbove") != null) {
-            predicate.and(publication.scoreStd.gt(new BigDecimal(params.get("stdAbove"))));
+        if (params.containsKey("minScoreStd")) {
+            predicate.and(publication.scoreStd.goe(new BigDecimal(params.get("minScoreStd"))));
         }
-        if (params.get("stdBelow") != null) {
-            predicate.and(publication.scoreStd.lt(new BigDecimal(params.get("stdBelow"))));
+        if (params.containsKey("maxScoreStd")) {
+            predicate.and(publication.scoreStd.loe(new BigDecimal(params.get("maxScoreStd"))));
         }
 
-        return publicationRepository.findAll(predicate);
+        return publicationRepository.findAll(predicate, pageable);
+    }
+
+    private void validateRequestParamLogicRules(Map<String, String> params) {
+        if (params.containsKey("name") && params.containsKey("nameContains")) {
+            throw new IllegalArgumentException("Invalid request parameters: only 1 allowed from name, nameContains");
+        }
+
+        if (params.containsKey("minScoreAvg")) {
+            ParamValidator.validateNumericArg("minScoreAvg", params.get("minScoreAvg"));
+            ParamValidator.validateNumericRange("minScoreAvg", params.get("minScoreAvg"), 0f, 100f);
+        }
+
+        if (params.containsKey("maxScoreAvg")) {
+            String param = "maxScoreAvg";
+            String arg = params.get(param);
+            ParamValidator.validateNumericArg("maxScoreAvg", params.get("maxScoreAvg"));
+            ParamValidator.validateNumericRange("maxScoreAvg", params.get("maxScoreAvg"), 0f, 100f);
+        }
+
+        if (params.containsKey("minScoreAvg") && params.containsKey("maxScoreAvg")) {
+            ParamValidator.validateMinLTEMax(
+                    "minScoreAvg",
+                    "maxScoreAvg",
+                    params.get("minScoreAvg"),
+                    params.get("maxScoreAvg")
+            );
+        }
+
+        if (params.containsKey("minScoreStd")) {
+            ParamValidator.validateNumericArg("minScoreStd", params.get("minScoreStd"));
+            ParamValidator.validateNumericRange("minScoreStd", params.get("minScoreStd"), 0f, 100f);
+        }
+
+        if (params.containsKey("maxScoreStd")) {
+            ParamValidator.validateNumericArg("maxScoreStd", params.get("maxScoreStd"));
+            ParamValidator.validateNumericRange("maxScoreStd", params.get("maxScoreStd"), 0f, 100f);
+        }
+
+        if (params.containsKey("minScoreStd") && params.containsKey("maxScoreStd")) {
+            ParamValidator.validateMinLTEMax(
+                    "minScoreStd",
+                    "maxScoreStd",
+                    params.get("minScoreStd"),
+                    params.get("maxScoreStd")
+            );
+        }
     }
 }

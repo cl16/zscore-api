@@ -3,6 +3,7 @@ package com.zscore_api.zscore_api.controller;
 import com.zscore_api.zscore_api.entity.Publication;
 import com.zscore_api.zscore_api.service.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,8 +23,8 @@ public class PublicationController {
     PublicationService publicationService;
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Publication>> getAllPublications() {
-        Iterable<Publication> result = publicationService.getAllPublications();
+    public ResponseEntity<Iterable<Publication>> getAllPublications(@RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<Publication> result = publicationService.getAllPublications(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -32,8 +33,8 @@ public class PublicationController {
     }
 
     @GetMapping(path="/{pubId}")
-    public ResponseEntity<Optional<Publication>> getPublicationById(@PathVariable(value="pubId") Integer pubId) {
-        Optional<Publication> result = publicationService.getPublicationById(pubId);
+    public ResponseEntity<Optional<Publication>> getPublicationById(@PathVariable(value="pubId") Integer pubId, @RequestParam Map<String, String> params) {
+        Optional<Publication> result = publicationService.getPublicationById(pubId, params);
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -42,8 +43,8 @@ public class PublicationController {
     }
 
     @GetMapping(path="")
-    public ResponseEntity getPublicationsByParams(@RequestParam Map<String, String> params) {
-        Iterable<Publication> result = publicationService.getPublicationsByParams(params);
+    public ResponseEntity getPublicationsByParams(@RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<Publication> result = publicationService.getPublicationsByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

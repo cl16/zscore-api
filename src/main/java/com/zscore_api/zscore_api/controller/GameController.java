@@ -30,8 +30,8 @@ public class GameController {
     }
 
     @GetMapping(path="/{gameId}")
-    public ResponseEntity<Optional<Game>> getGameById(@RequestParam Map<String, String> params, @PathVariable(value="gameId") Integer gameId) {
-        Optional<Game> result = gameService.getGameById(params, gameId);
+    public ResponseEntity<Optional<Game>> getGameById(@PathVariable(value="gameId") Integer gameId, @RequestParam Map<String, String> params) {
+        Optional<Game> result = gameService.getGameById(gameId, params);
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
