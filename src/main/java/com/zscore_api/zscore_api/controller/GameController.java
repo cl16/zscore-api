@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,8 +20,8 @@ public class GameController {
     private GameService gameService;
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Game>> getAllGames(Pageable pageable) {
-        Iterable<Game> result = gameService.getAllGames(pageable);
+    public ResponseEntity<Iterable<Game>> getAllGames(@RequestParam Map<String, String> params,Pageable pageable) {
+        Iterable<Game> result = gameService.getAllGames(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -31,8 +30,8 @@ public class GameController {
     }
 
     @GetMapping(path="/{gameId}")
-    public ResponseEntity<Optional<Game>> getGameById(@PathVariable(value="gameId") Integer gameId) {
-        Optional<Game> result = gameService.getGameById(gameId);
+    public ResponseEntity<Optional<Game>> getGameById(@RequestParam Map<String, String> params, @PathVariable(value="gameId") Integer gameId) {
+        Optional<Game> result = gameService.getGameById(params, gameId);
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

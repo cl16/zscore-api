@@ -18,11 +18,14 @@ public class GameService {
     Set<String> validRequestParams = new HashSet<>(Arrays.asList("title", "titleContains"));
     Set<String> sortArgs = new HashSet<>(Arrays.asList("gameId", "title"));
 
-    public Iterable<Game> getAllGames(Pageable pageable) {
+    public Iterable<Game> getAllGames(Map<String, String> params, Pageable pageable) {
+        ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
+        ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return gameRepository.findAll(pageable);
     }
 
-    public Optional<Game> getGameById(Integer gameId) {
+    public Optional<Game> getGameById(Map<String, String> params, Integer gameId) {
+        ParamValidator.blockAllRequestParams(params);
         return gameRepository.findById(gameId);
     }
 
