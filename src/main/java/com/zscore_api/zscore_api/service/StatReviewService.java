@@ -1,6 +1,7 @@
 package com.zscore_api.zscore_api.service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Param;
 import com.zscore_api.zscore_api.entity.QStatReview;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
@@ -39,22 +40,17 @@ public class StatReviewService {
     Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList("avgScore", "avgZscore"));
 
 
+    public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
+        ParamValidator.blockAllRequestParams(params);
+        return statReviewRepository.findById(new GamePubKey(gameId, pubId));
+    }
 
-    public Iterable<StatReview> getStatReviewById(Integer gameId, Integer pubId) throws IllegalArgumentException {
-        if (gameId != null && pubId != null) {
-            Optional<StatReview> result = statReviewRepository.findById(new GamePubKey(gameId, pubId));
-            if (result.isPresent()) {
-                return new ArrayList<>(List.of(result.get()));
-            } else {
-                return new ArrayList<>();
-            }
-        } else if (gameId != null) {
-            return statReviewRepository.findByIdGameId(gameId);
-        } else if (pubId != null) {
-            return statReviewRepository.findByIdPubId(pubId);
-        } else {
-            throw new IllegalArgumentException("At least one of GameId or PubId must be provided.");
-        }
+    public Iterable<StatReview> getStatReviewsByGameId(Integer gameId) {
+        return statReviewRepository.findByIdGameId(gameId);
+    }
+
+    public Iterable<StatReview> getStatReviewsByPubId(Integer pubId) {
+        return statReviewRepository.findByIdPubId(pubId);
     }
 
     public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {
