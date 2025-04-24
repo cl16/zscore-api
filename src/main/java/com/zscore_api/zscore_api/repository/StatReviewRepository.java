@@ -18,7 +18,7 @@ public interface StatReviewRepository extends
         JpaRepository<StatReview, GamePubKey>,
         PagingAndSortingRepository<StatReview, GamePubKey> {
 
-    Iterable<StatReview> findByIdGameId(Integer gameId);
+    List<StatReview> findByIdGameId(Integer gameId, Pageable pageable);
 
     Iterable<StatReview> findByIdPubId(Integer pubId);
 

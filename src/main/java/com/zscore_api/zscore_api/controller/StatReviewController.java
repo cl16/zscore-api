@@ -24,7 +24,7 @@ public class StatReviewController {
     @Autowired
     private StatReviewService statReviewService;
 
-    @GetMapping(path="/{gameId}_{pubId}")
+    @GetMapping(path="/{gameId}-{pubId}")
     public ResponseEntity getStatReviewById(@PathVariable Integer gameId, @PathVariable Integer pubId, @RequestParam Map<String, String> params) {
         Optional<StatReview> result = statReviewService.getStatReviewById(gameId, pubId, params);
         if (result.isPresent()) {
@@ -37,6 +37,16 @@ public class StatReviewController {
     @GetMapping(path="")
     public ResponseEntity getStatReviewsByParams(@RequestParam Map<String, String> params, Pageable pageable) {
         Iterable<StatReview> result = statReviewService.getStatReviewsByParams(params, pageable);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping(path="/game/{gameId}")
+    public ResponseEntity getStatReviewsByGameId(@PathVariable Integer gameId, @RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<StatReview> result = statReviewService.getStatReviewsByGameId(gameId, params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

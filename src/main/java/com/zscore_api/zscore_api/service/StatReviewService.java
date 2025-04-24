@@ -34,6 +34,8 @@ public class StatReviewService {
     Set<String> gameDefiningParams = new HashSet<>(Arrays.asList("gameId", "gameTitle", "gameTitleContains"));
     Set<String> pubDefiningParams = new HashSet<>(Arrays.asList("pubId", "pubName", "pubNameContains"));
 
+    Set<String> statReviewSortArgs = new HashSet<>(Arrays.asList("score", "zscore"));
+
     Set<String> statReviewGroupParams = new HashSet<>(Arrays.asList(
             "minReviewCount", "minAvgScore", "maxAvgScore", "minAvgZscore", "maxAvgZscore"
     ));
@@ -45,8 +47,10 @@ public class StatReviewService {
         return statReviewRepository.findById(new GamePubKey(gameId, pubId));
     }
 
-    public Iterable<StatReview> getStatReviewsByGameId(Integer gameId) {
-        return statReviewRepository.findByIdGameId(gameId);
+    public Iterable<StatReview> getStatReviewsByGameId(Integer gameId, Map<String, String> params, Pageable pageable) {
+        ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
+        ParamValidator.validateDomainRequestParams(params, new HashSet<>());
+        return statReviewRepository.findByIdGameId(gameId, pageable);
     }
 
     public Iterable<StatReview> getStatReviewsByPubId(Integer pubId) {
