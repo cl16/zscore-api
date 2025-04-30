@@ -20,7 +20,7 @@ public interface StatReviewRepository extends
 
     List<StatReview> findByIdGameId(Integer gameId, Pageable pageable);
 
-    Iterable<StatReview> findByIdPubId(Integer pubId);
+    List<StatReview> findByIdPubId(Integer pubId, Pageable pageable);
 
     @Query(
             value = """

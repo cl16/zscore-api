@@ -41,7 +41,6 @@ public class StatReviewService {
     ));
     Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList("avgScore", "avgZscore"));
 
-
     public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
         ParamValidator.blockAllRequestParams(params);
         return statReviewRepository.findById(new GamePubKey(gameId, pubId));
@@ -53,8 +52,10 @@ public class StatReviewService {
         return statReviewRepository.findByIdGameId(gameId, pageable);
     }
 
-    public Iterable<StatReview> getStatReviewsByPubId(Integer pubId) {
-        return statReviewRepository.findByIdPubId(pubId);
+    public Iterable<StatReview> getStatReviewsByPubId(Integer pubId, Map<String, String> params, Pageable pageable) {
+        ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
+        ParamValidator.validateDomainRequestParams(params, new HashSet<>());
+        return statReviewRepository.findByIdPubId(pubId, pageable);
     }
 
     public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {

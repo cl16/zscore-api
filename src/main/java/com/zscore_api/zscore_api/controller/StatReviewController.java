@@ -54,6 +54,16 @@ public class StatReviewController {
         }
     }
 
+    @GetMapping(path="/publication/{pubId}")
+    public ResponseEntity getStatReviewsByPubId(@PathVariable Integer pubId, @RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<StatReview> result = statReviewService.getStatReviewsByPubId(pubId, params, pageable);
+        if (result.iterator().hasNext()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, HttpStatus.NO_CONTENT);
+        }
+    }
+
     @GetMapping(path="/gameAverages")
     public ResponseEntity getAllStatReviewGameGroupsWithAverages(@RequestParam Map<String, String> params, Pageable pageable) {
         Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages(params, pageable);
