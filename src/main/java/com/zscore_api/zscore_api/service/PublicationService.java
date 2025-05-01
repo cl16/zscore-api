@@ -1,7 +1,6 @@
 package com.zscore_api.zscore_api.service;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.Param;
 import com.zscore_api.zscore_api.entity.QPublication;
 import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.repository.PublicationRepository;
@@ -83,7 +82,7 @@ public class PublicationService {
         }
 
         if (params.containsKey("minScoreAvg") && params.containsKey("maxScoreAvg")) {
-            ParamValidator.validateMinLTEMax(
+            ParamValidator.validateMinLOEMax(
                     "minScoreAvg",
                     "maxScoreAvg",
                     params.get("minScoreAvg"),
@@ -102,7 +101,7 @@ public class PublicationService {
         }
 
         if (params.containsKey("minScoreStd") && params.containsKey("maxScoreStd")) {
-            ParamValidator.validateMinLTEMax(
+            ParamValidator.validateMinLOEMax(
                     "minScoreStd",
                     "maxScoreStd",
                     params.get("minScoreStd"),

@@ -1,7 +1,6 @@
 package com.zscore_api.zscore_api.service;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.Param;
 import com.zscore_api.zscore_api.entity.QStatReview;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -28,12 +28,9 @@ public class StatReviewService {
     Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
 
     Set<String> statReviewParams = new HashSet<>(Arrays.asList(
-            "gameId", "pubId", "gameTitle", "gameTitleContains", "pubName", "pubNameContains",
-            "scoreAbove", "scoreBelow"
+            "gameId", "pubId", "gameTitleContains", "pubNameContains",
+            "minScore", "maxScore", "minZscore", "maxZscore"
     ));
-    Set<String> gameDefiningParams = new HashSet<>(Arrays.asList("gameId", "gameTitle", "gameTitleContains"));
-    Set<String> pubDefiningParams = new HashSet<>(Arrays.asList("pubId", "pubName", "pubNameContains"));
-
     Set<String> statReviewSortArgs = new HashSet<>(Arrays.asList("score", "zscore"));
 
     Set<String> statReviewGroupParams = new HashSet<>(Arrays.asList(
@@ -59,9 +56,9 @@ public class StatReviewService {
     }
 
     public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {
-        logger.info("getStatReviewsByParams params: " + params);
-        this.validateParamsAgainstExpected(params, this.statReviewParams);
-        this.enforceStatReviewRequestParamLogicRules(params);
+        ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
+        ParamValidator.validateDomainRequestParams(params, statReviewParams);
+        this.validateStatReviewParamLogicRules(params);
 
         QStatReview statReview = QStatReview.statReview;
         BooleanBuilder predicate = new BooleanBuilder();
@@ -72,42 +69,63 @@ public class StatReviewService {
         if (params.containsKey("pubId")) {
             predicate.and(statReview.id.pubId.eq(Integer.parseInt(params.get("pubId"))));
         }
-        if (params.containsKey("gameTitle")) {
-            predicate.and(statReview.game.title.eq(params.get("gameTitle")));
-        }
         if (params.containsKey("gameTitleContains")) {
             predicate.and(statReview.game.title.containsIgnoreCase(params.get("gameTitleContains")));
-        }
-        if (params.containsKey("pubName")) {
-            predicate.and(statReview.publication.name.eq(params.get("pubName")));
         }
         if (params.containsKey("pubNameContains")) {
             predicate.and(statReview.publication.name.containsIgnoreCase(params.get("pubNameContains")));
         }
-        if (params.containsKey("scoreAbove")) {
-            predicate.and(statReview.score.gt(Integer.parseInt(params.get("scoreAbove"))));
+        if (params.containsKey("minScore")) {
+            predicate.and(statReview.score.goe(Integer.parseInt(params.get("minScore"))));
         }
-        if (params.containsKey("scoreBelow")) {
-            predicate.and(statReview.score.lt((Integer.parseInt(params.get("scoreBelow")))));
+        if (params.containsKey("maxScore")) {
+            predicate.and(statReview.score.loe(Integer.parseInt(params.get("maxScore"))));
+        }
+        if (params.containsKey("minZscore")) {
+            predicate.and(statReview.zscore.goe(new BigDecimal(params.get("minZscore"))));
+        }
+        if (params.containsKey("maxZscore")) {
+            predicate.and(statReview.zscore.loe(new BigDecimal(params.get("maxZscore"))));
         }
 
         return statReviewRepository.findAll(predicate, pageable);
     }
 
-    private void validateParamsAgainstExpected(Map<String, String> params, Set<String> expected) throws IllegalArgumentException {
-        Set<String> allExpected = SetOps.union(this.pagingAndSortingParams, expected);
-        if (!allExpected.containsAll(params.keySet())) {
-            Set<String> unexpected = SetOps.subtract(params.keySet(), allExpected);
-            throw new IllegalArgumentException("Invalid request parameters: " + String.join(", ", unexpected));
+    private void validateStatReviewParamLogicRules(Map<String, String> params) {
+        if (params.containsKey("minScore")) {
+            ParamValidator.validateNumericArg("minScore", params.get("minScore"));
+            ParamValidator.validateNumericRange("minScore", params.get("minScore"), 0f, 100f);
         }
-    }
 
-    private void enforceStatReviewRequestParamLogicRules(Map<String, String> params) {
-        if (SetOps.numIntersecting(params.keySet(), this.gameDefiningParams) > 1) {
-            throw new IllegalArgumentException("Invalid request parameters");
+        if (params.containsKey("maxScore")) {
+            ParamValidator.validateNumericArg("maxScore", params.get("maxScore"));
+            ParamValidator.validateNumericRange("maxScore", params.get("maxScore"), 0f, 100f);
         }
-        if (SetOps.numIntersecting(params.keySet(), this.pubDefiningParams) > 1) {
-            throw new IllegalArgumentException("Invalid request parameters");
+
+        if (params.containsKey("minScore") && params.containsKey("maxScore")) {
+            ParamValidator.validateMinLOEMax(
+                    "minScore",
+                    "maxScore",
+                    params.get("minScore"),
+                    params.get("maxScore")
+            );
+        }
+
+        if (params.containsKey("minZscore")) {
+            ParamValidator.validateNumericArg("minZscore", params.get("minZscore"));
+        }
+
+        if (params.containsKey("maxZscore")) {
+            ParamValidator.validateNumericArg("maxZscore", params.get("maxZscore"));
+        }
+
+        if (params.containsKey("minZscore") && params.containsKey("maxZscore")) {
+            ParamValidator.validateMinLOEMax(
+                    "minZscore",
+                    "maxZscore",
+                    params.get("minZscore"),
+                    params.get("maxZscore")
+            );
         }
     }
 
@@ -181,7 +199,7 @@ public class StatReviewService {
 
     public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Map<String, String> params, Pageable pageable) {
         logger.info("getAllStatReviewGameGroupsWithAverages params: {}", params);
-        this.validateParamsAgainstExpected(params, this.statReviewGroupParams);
+
         ParamValidator.validatePagingAndSortingArgs(params, statReviewGroupSortArgs);
         this.enforceStatReviewGroupRequestParamLogicRules(params);
         Map<String, Float> convertedParams = this.convertStatReviewGroupParamsWithDefaults(params);

@@ -91,7 +91,7 @@ public class ParamValidator {
      * @param argMin Minimum value
      * @param argMax Maximum value
      */
-    public static void validateMinLTEMax(String paramMin, String paramMax, String argMin, String argMax) {
+    public static void validateMinLOEMax(String paramMin, String paramMax, String argMin, String argMax) {
         float argMinFloat = Float.parseFloat(argMin);
         float argMaxFloat = Float.parseFloat(argMax);
         if (!(argMinFloat <= argMaxFloat)) {
