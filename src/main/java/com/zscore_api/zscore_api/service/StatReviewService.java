@@ -5,7 +5,6 @@ import com.zscore_api.zscore_api.entity.QStatReview;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.helper.ParamValidator;
-import com.zscore_api.zscore_api.helper.SetOps;
 import com.zscore_api.zscore_api.key.GamePubKey;
 import com.zscore_api.zscore_api.repository.StatReviewRepository;
 import org.apache.logging.log4j.LogManager;
@@ -129,41 +128,45 @@ public class StatReviewService {
         }
     }
 
-    private void enforceStatReviewGroupRequestParamLogicRules(Map<String, String> params) {
-        // Check values are numeric
-        Set<String> nonPagingAndSortingKeys = SetOps.subtract(new HashSet<>(params.keySet()), this.pagingAndSortingParams);
-        for (String key : nonPagingAndSortingKeys) {
-            String value = params.get(key);
-            if (!value.matches("^-?[0-9]+\\.?[0-9]*$")) {
-                throw new IllegalArgumentException("Request parameter value must be numeric, failed value: " + value);
-            }
+    private void validateStatReviewGroupParamLogicRules(Map<String, String> params) {
+        if (params.containsKey("minReviewCount")) {
+            ParamValidator.validateNumericArg("minReviewCount", params.get("minReviewCount"));
         }
 
-        // Check values within accepted ranges
-        if (params.containsKey("minReviewCount") && Float.parseFloat(params.get("minReviewCount")) < 0) {
-            throw new IllegalArgumentException("minReviewCount must be greater than 0");
-        }
         if (params.containsKey("minAvgScore")) {
-            if (Float.parseFloat(params.get("minAvgScore")) < 0 || (Float.parseFloat(params.get("minAvgScore")) >= 100)) {
-                throw new IllegalArgumentException("minAvgScore must be greater than or equal to 0, and less than 100");
-            }
+            ParamValidator.validateNumericArg("minAvgScore", params.get("minAvgScore"));
+            ParamValidator.validateNumericRange("minAvgScore", params.get("minAvgScore"), 0f, 100f);
         }
+
         if (params.containsKey("maxAvgScore")) {
-            if (Float.parseFloat(params.get("maxAvgScore")) <= 0 || Float.parseFloat(params.get("maxAvgScore")) > 100) {
-                throw new IllegalArgumentException("maxAvgScore must be greater than 0, and less than or equal to 100");
-            }
+            ParamValidator.validateNumericArg("maxAvgScore", params.get("maxAvgScore"));
+            ParamValidator.validateNumericRange("maxAvgScore", params.get("maxAvgScore"), 0f, 100f);
         }
 
         if (params.containsKey("minAvgScore") && params.containsKey("maxAvgScore")) {
-            if (Float.parseFloat(params.get("minAvgScore")) > Float.parseFloat(params.get("maxAvgScore"))) {
-                throw new IllegalArgumentException("minAvgScore argument must be <= maxAvgScore argument");
-            }
+            ParamValidator.validateMinLOEMax(
+                    "minAvgScore",
+                    "maxAvgScore",
+                    params.get("minAvgScore"),
+                    params.get("maxAvgScore")
+            );
+        }
+
+        if (params.containsKey("minAvgZscore")) {
+            ParamValidator.validateNumericArg("minAvgZscore", params.get("minAvgZscore"));
+        }
+
+        if (params.containsKey("maxAvgZscore")) {
+            ParamValidator.validateNumericArg("maxAvgZscore", params.get("maxAvgZscore"));
         }
 
         if (params.containsKey("minAvgZscore") && params.containsKey("maxAvgZscore")) {
-            if (Float.parseFloat(params.get("minAvgZscore")) > Float.parseFloat(params.get("maxAvgZscore"))) {
-                throw new IllegalArgumentException("minAvgZscore argument must be <= maxAvgZscore argument");
-            }
+            ParamValidator.validateMinLOEMax(
+                    "minAvgZscore",
+                    "maxAvgZscore",
+                    params.get("minAvgZscore"),
+                    params.get("maxAvgZscore")
+            );
         }
     }
 
@@ -197,13 +200,14 @@ public class StatReviewService {
         return checkedParams;
     }
 
-    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameGroupsWithAverages(Map<String, String> params, Pageable pageable) {
+    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameAggregates(Map<String, String> params, Pageable pageable) {
         logger.info("getAllStatReviewGameGroupsWithAverages params: {}", params);
 
         ParamValidator.validatePagingAndSortingArgs(params, statReviewGroupSortArgs);
-        this.enforceStatReviewGroupRequestParamLogicRules(params);
+        ParamValidator.validateDomainRequestParams(params, statReviewGroupParams);
+        this.validateStatReviewGroupParamLogicRules(params);
         Map<String, Float> convertedParams = this.convertStatReviewGroupParamsWithDefaults(params);
-        return statReviewRepository.findAllStatReviewsGameGroupsWithAverages(
+        return statReviewRepository.findAllStatReviewsGameAggregates(
                 convertedParams.get("minReviewCount"),
                 convertedParams.get("minAvgScore"),
                 convertedParams.get("maxAvgScore"),

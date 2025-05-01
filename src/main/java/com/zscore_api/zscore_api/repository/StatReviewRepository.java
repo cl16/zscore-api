@@ -33,7 +33,7 @@ public interface StatReviewRepository extends
             """,
             nativeQuery = true
     )
-    List<StatReviewWithGameDTO> findAllStatReviewsGameGroupsWithAverages(
+    List<StatReviewWithGameDTO> findAllStatReviewsGameAggregates(
             Float minReviewCount,
             Float minAvgScore,
             Float maxAvgScore,

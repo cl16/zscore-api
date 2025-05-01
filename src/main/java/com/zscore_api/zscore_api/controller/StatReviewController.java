@@ -3,7 +3,6 @@ package com.zscore_api.zscore_api.controller;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.service.StatReviewService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -64,9 +63,9 @@ public class StatReviewController {
         }
     }
 
-    @GetMapping(path="/gameAverages")
-    public ResponseEntity getAllStatReviewGameGroupsWithAverages(@RequestParam Map<String, String> params, Pageable pageable) {
-        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameGroupsWithAverages(params, pageable);
+    @GetMapping(path="/gameAggregate")
+    public ResponseEntity getAllStatReviewGameAggregates(@RequestParam Map<String, String> params, Pageable pageable) {
+        Iterable<StatReviewWithGameDTO> result = statReviewService.getAllStatReviewGameAggregates(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
