@@ -12,16 +12,25 @@ import java.util.regex.Pattern;
  */
 public class ParamValidator {
 
-    private static final Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "sort"));
+    private static final Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
     private static final String pageArgPatternString = "0|[1-9][0-9]*";
     private static final String sortArgPatternString = "([a-zA-Z]+)(,(?:asc|desc))?";
-
+    private static final String integerPatternString = "^-?[0-9]+$";
     private static final String numericPatternString = "^-?[0-9]+\\.?[0-9]*$";
 
     public static void validatePagingAndSortingArgs(Map<String, String> params, Set<String> validSortArgs) {
         if (params.containsKey("page")) {
             if (!params.get("page").matches(pageArgPatternString)) {
                 throw new IllegalArgumentException("Invalid request argument: page argument must be integer >= 0");
+            }
+        }
+
+        if (params.containsKey("size")) {
+            if (!params.get("size").matches(integerPatternString)) {
+                throw new IllegalArgumentException("Invalid request argument: size argument must be integer");
+            }
+            if (Integer.parseInt(params.get("size")) < 1) {
+                throw new IllegalArgumentException("Invalid request argument: size argument must be >= 1");
             }
         }
 
