@@ -15,12 +15,12 @@ public class GameService {
     @Autowired
     GameRepository gameRepository;
 
-    private final String ID_STRING = "gameId";
-    private final String TITLE_STRING = "title";
-    private final String TITLE_CONTAINS_STRING = "titleContains";
+    private final String ID_STR = "gameId";
+    private final String TITLE_STR = "title";
+    private final String TITLE_CONTAINS_STR = "titleContains";
 
-    Set<String> validRequestParams = new HashSet<>(Arrays.asList(TITLE_STRING, TITLE_CONTAINS_STRING));
-    Set<String> sortArgs = new HashSet<>(Arrays.asList(ID_STRING, TITLE_STRING));
+    Set<String> validRequestParams = new HashSet<>(Arrays.asList(TITLE_STR, TITLE_CONTAINS_STR));
+    Set<String> sortArgs = new HashSet<>(Arrays.asList(ID_STR, TITLE_STR));
 
     public Iterable<Game> getAllGames(Map<String, String> params, Pageable pageable) {
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
@@ -38,10 +38,10 @@ public class GameService {
         ParamValidator.validateDomainRequestParams(params, validRequestParams);
         this.validateRequestParamLogicRules(params);
 
-        if (params.containsKey(TITLE_STRING)) {
-            return gameRepository.findByTitle(params.get(TITLE_STRING), pageable);
+        if (params.containsKey(TITLE_STR)) {
+            return gameRepository.findByTitle(params.get(TITLE_STR), pageable);
         } else {
-            return gameRepository.findByTitleContains(params.get(TITLE_CONTAINS_STRING), pageable);
+            return gameRepository.findByTitleContains(params.get(TITLE_CONTAINS_STR), pageable);
         }
     }
 
@@ -51,8 +51,8 @@ public class GameService {
             throw new IllegalArgumentException(
                     String.format(
                             "Invalid request parameters: only 1 allowed from %s, %s",
-                            TITLE_STRING,
-                            TITLE_CONTAINS_STRING
+                            TITLE_STR,
+                            TITLE_CONTAINS_STR
                     )
             );
         }

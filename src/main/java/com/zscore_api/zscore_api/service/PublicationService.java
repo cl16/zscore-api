@@ -18,10 +18,24 @@ public class PublicationService {
     @Autowired
     private PublicationRepository publicationRepository;
 
+    private final String NAME_STR = "name";
+    private final String NAME_CONTAINS_STR = "nameContains";
+    private final String SCORE_AVG_STR = "scoreAvg";
+    private final String SCORE_STD_STR = "scoreStd";
+    private final String MIN_SCORE_AVG_STR = "minScoreAvg";
+    private final String MAX_SCORE_AVG_STR = "maxScoreAvg";
+    private final String MIN_SCORE_STD_STR = "minScoreStd";
+    private final String MAX_SCORE_STD_STR = "maxScoreStd";
+
     Set<String> validRequestParams = new HashSet<>(Arrays.asList(
-            "name", "nameContains", "minScoreAvg", "maxScoreAvg", "minScoreStd", "maxScoreStd"
+            NAME_STR,
+            NAME_CONTAINS_STR,
+            MIN_SCORE_AVG_STR,
+            MAX_SCORE_AVG_STR,
+            MIN_SCORE_STD_STR,
+            MAX_SCORE_STD_STR
     ));
-    Set<String> sortArgs = new HashSet<>(Arrays.asList("name", "scoreAvg", "scoreStd"));
+    Set<String> sortArgs = new HashSet<>(Arrays.asList(NAME_STR, SCORE_AVG_STR, SCORE_STD_STR));
 
     public Iterable<Publication> getAllPublications(Map<String, String> params, Pageable pageable) {
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
@@ -42,70 +56,74 @@ public class PublicationService {
         QPublication publication = QPublication.publication;
         BooleanBuilder predicate = new BooleanBuilder();
 
-        if (params.containsKey("name")) {
-            predicate.and(publication.name.eq(params.get("name")));
+        if (params.containsKey(NAME_STR)) {
+            predicate.and(publication.name.eq(params.get(NAME_STR)));
         }
-        if (params.containsKey("nameContains")) {
-            predicate.and(publication.name.containsIgnoreCase(params.get("nameContains")));
+        if (params.containsKey(NAME_CONTAINS_STR)) {
+            predicate.and(publication.name.containsIgnoreCase(params.get(NAME_CONTAINS_STR)));
         }
-        if (params.containsKey("minScoreAvg")) {
-            predicate.and(publication.scoreAvg.goe(new BigDecimal(params.get("minScoreAvg"))));
+        if (params.containsKey(MIN_SCORE_AVG_STR)) {
+            predicate.and(publication.scoreAvg.goe(new BigDecimal(params.get(MIN_SCORE_AVG_STR))));
         }
-        if (params.containsKey("maxScoreAvg")) {
-            predicate.and(publication.scoreAvg.loe(new BigDecimal(params.get("maxScoreAvg"))));
+        if (params.containsKey(MAX_SCORE_AVG_STR)) {
+            predicate.and(publication.scoreAvg.loe(new BigDecimal(params.get(MAX_SCORE_AVG_STR))));
         }
-        if (params.containsKey("minScoreStd")) {
-            predicate.and(publication.scoreStd.goe(new BigDecimal(params.get("minScoreStd"))));
+        if (params.containsKey(MIN_SCORE_STD_STR)) {
+            predicate.and(publication.scoreStd.goe(new BigDecimal(params.get(MIN_SCORE_STD_STR))));
         }
-        if (params.containsKey("maxScoreStd")) {
-            predicate.and(publication.scoreStd.loe(new BigDecimal(params.get("maxScoreStd"))));
+        if (params.containsKey(MAX_SCORE_STD_STR)) {
+            predicate.and(publication.scoreStd.loe(new BigDecimal(params.get(MAX_SCORE_STD_STR))));
         }
 
         return publicationRepository.findAll(predicate, pageable);
     }
 
     private void validateRequestParamLogicRules(Map<String, String> params) {
-        if (params.containsKey("name") && params.containsKey("nameContains")) {
-            throw new IllegalArgumentException("Invalid request parameters: only 1 allowed from name, nameContains");
-        }
-
-        if (params.containsKey("minScoreAvg")) {
-            ParamValidator.validateNumericArg("minScoreAvg", params.get("minScoreAvg"));
-            ParamValidator.validateNumericRange("minScoreAvg", params.get("minScoreAvg"), 0f, 100f);
-        }
-
-        if (params.containsKey("maxScoreAvg")) {
-            String param = "maxScoreAvg";
-            String arg = params.get(param);
-            ParamValidator.validateNumericArg("maxScoreAvg", params.get("maxScoreAvg"));
-            ParamValidator.validateNumericRange("maxScoreAvg", params.get("maxScoreAvg"), 0f, 100f);
-        }
-
-        if (params.containsKey("minScoreAvg") && params.containsKey("maxScoreAvg")) {
-            ParamValidator.validateMinLOEMax(
-                    "minScoreAvg",
-                    "maxScoreAvg",
-                    params.get("minScoreAvg"),
-                    params.get("maxScoreAvg")
+        if (params.containsKey(NAME_STR) && params.containsKey(NAME_CONTAINS_STR)) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Invalid request parameters: only 1 allowed from %s, %s",
+                            NAME_STR,
+                            NAME_CONTAINS_STR
+                    )
             );
         }
 
-        if (params.containsKey("minScoreStd")) {
-            ParamValidator.validateNumericArg("minScoreStd", params.get("minScoreStd"));
-            ParamValidator.validateNumericRange("minScoreStd", params.get("minScoreStd"), 0f, 100f);
+        if (params.containsKey(MIN_SCORE_AVG_STR)) {
+            ParamValidator.validateNumericArg(MIN_SCORE_AVG_STR, params.get(MIN_SCORE_AVG_STR));
+            ParamValidator.validateNumericRange(MIN_SCORE_AVG_STR, params.get(MIN_SCORE_AVG_STR), 0f, 100f);
         }
 
-        if (params.containsKey("maxScoreStd")) {
-            ParamValidator.validateNumericArg("maxScoreStd", params.get("maxScoreStd"));
-            ParamValidator.validateNumericRange("maxScoreStd", params.get("maxScoreStd"), 0f, 100f);
+        if (params.containsKey(MAX_SCORE_AVG_STR)) {
+            ParamValidator.validateNumericArg(MAX_SCORE_AVG_STR, params.get(MAX_SCORE_AVG_STR));
+            ParamValidator.validateNumericRange(MAX_SCORE_AVG_STR, params.get(MAX_SCORE_AVG_STR), 0f, 100f);
         }
 
-        if (params.containsKey("minScoreStd") && params.containsKey("maxScoreStd")) {
+        if (params.containsKey(MIN_SCORE_AVG_STR) && params.containsKey(MAX_SCORE_AVG_STR)) {
             ParamValidator.validateMinLOEMax(
-                    "minScoreStd",
-                    "maxScoreStd",
-                    params.get("minScoreStd"),
-                    params.get("maxScoreStd")
+                    MIN_SCORE_AVG_STR,
+                    MAX_SCORE_AVG_STR,
+                    params.get(MIN_SCORE_AVG_STR),
+                    params.get(MAX_SCORE_AVG_STR)
+            );
+        }
+
+        if (params.containsKey(MIN_SCORE_STD_STR)) {
+            ParamValidator.validateNumericArg(MIN_SCORE_STD_STR, params.get(MIN_SCORE_STD_STR));
+            ParamValidator.validateNumericRange(MIN_SCORE_STD_STR, params.get(MIN_SCORE_STD_STR), 0f, 100f);
+        }
+
+        if (params.containsKey(MAX_SCORE_STD_STR)) {
+            ParamValidator.validateNumericArg(MAX_SCORE_STD_STR, params.get(MAX_SCORE_STD_STR));
+            ParamValidator.validateNumericRange(MAX_SCORE_STD_STR, params.get(MAX_SCORE_STD_STR), 0f, 100f);
+        }
+
+        if (params.containsKey(MIN_SCORE_STD_STR) && params.containsKey(MAX_SCORE_STD_STR)) {
+            ParamValidator.validateMinLOEMax(
+                    MIN_SCORE_STD_STR,
+                    MAX_SCORE_STD_STR,
+                    params.get(MIN_SCORE_STD_STR),
+                    params.get(MAX_SCORE_STD_STR)
             );
         }
     }
