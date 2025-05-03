@@ -79,7 +79,7 @@ public class PublicationService {
     }
 
     private void validateRequestParamLogicRules(Map<String, String> params) {
-        ParamValidator.validateIncompatibleParams(params, new HashSet<>(Arrays.asList(NAME_STR, NAME_CONTAINS_STR)));
+        ParamValidator.validateMutuallyIncompatibleParams(params, new HashSet<>(Arrays.asList(NAME_STR, NAME_CONTAINS_STR)));
 
         if (params.containsKey(MIN_SCORE_AVG_STR)) {
             ParamValidator.validateNumericArg(MIN_SCORE_AVG_STR, params.get(MIN_SCORE_AVG_STR));

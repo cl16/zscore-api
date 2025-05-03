@@ -118,7 +118,7 @@ public class ParamValidator {
         }
     }
 
-    public static void validateIncompatibleParams(Map<String, String> params, Set<String> incompatible) {
+    public static void validateMutuallyIncompatibleParams(Map<String, String> params, Set<String> incompatible) {
         if (SetOps.numIntersecting(params.keySet(), incompatible) > 1) {
             throw new IllegalArgumentException(
                     "Invalid request parameters: only 1 allowed from " + String.join(", ", incompatible)
