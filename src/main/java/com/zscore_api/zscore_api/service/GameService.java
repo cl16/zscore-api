@@ -1,5 +1,6 @@
 package com.zscore_api.zscore_api.service;
 
+import com.querydsl.core.types.dsl.Param;
 import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.repository.GameRepository;
 import com.zscore_api.zscore_api.entity.Game;
@@ -46,15 +47,6 @@ public class GameService {
     }
 
     private void validateRequestParamLogicRules(Map<String, String> params) {
-        Set<String> nonPagingAndSortingParams = ParamValidator.nonPagingAndSortingParams(params.keySet());
-        if (nonPagingAndSortingParams.size() > 1) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Invalid request parameters: only 1 allowed from %s, %s",
-                            TITLE_STR,
-                            TITLE_CONTAINS_STR
-                    )
-            );
-        }
+        ParamValidator.validateIncompatibleParams(params, new HashSet<>(Arrays.asList(TITLE_STR, TITLE_CONTAINS_STR)));
     }
 }

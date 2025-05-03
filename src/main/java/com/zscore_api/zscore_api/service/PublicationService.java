@@ -79,15 +79,7 @@ public class PublicationService {
     }
 
     private void validateRequestParamLogicRules(Map<String, String> params) {
-        if (params.containsKey(NAME_STR) && params.containsKey(NAME_CONTAINS_STR)) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Invalid request parameters: only 1 allowed from %s, %s",
-                            NAME_STR,
-                            NAME_CONTAINS_STR
-                    )
-            );
-        }
+        ParamValidator.validateIncompatibleParams(params, new HashSet<>(Arrays.asList(NAME_STR, NAME_CONTAINS_STR)));
 
         if (params.containsKey(MIN_SCORE_AVG_STR)) {
             ParamValidator.validateNumericArg(MIN_SCORE_AVG_STR, params.get(MIN_SCORE_AVG_STR));

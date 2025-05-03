@@ -83,13 +83,15 @@ public class ParamValidator {
     public static void validateNumericRange(String param, String arg, Float min, Float max) {
         float argFloat = Float.parseFloat(arg);
         if (!(argFloat >= min) || !(argFloat <= max)) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(
+                String.format(
                     "Invalid argument values: param %s value %s must be between %s and %s, inclusive",
                     param,
                     arg,
                     min,
                     max
-            ));
+                )
+            );
         }
     }
 
@@ -104,13 +106,23 @@ public class ParamValidator {
         float argMinFloat = Float.parseFloat(argMin);
         float argMaxFloat = Float.parseFloat(argMax);
         if (!(argMinFloat <= argMaxFloat)) {
-            throw new IllegalArgumentException(String.format(
+            throw new IllegalArgumentException(
+                String.format(
                     "Invalid argument values: %s value %s must be less then or equal to %s value %s",
                     paramMin,
                     argMin,
                     paramMax,
                     argMax
-            ));
+                )
+            );
+        }
+    }
+
+    public static void validateIncompatibleParams(Map<String, String> params, Set<String> incompatible) {
+        if (SetOps.numIntersecting(params.keySet(), incompatible) > 1) {
+            throw new IllegalArgumentException(
+                    "Invalid request parameters: only 1 allowed from " + String.join(", ", incompatible)
+            );
         }
     }
 }
