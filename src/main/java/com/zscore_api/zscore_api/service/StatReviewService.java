@@ -19,23 +19,48 @@ import java.util.*;
 @Service
 public class StatReviewService {
 
-    private static Logger logger = LogManager.getLogger(StatReviewService.class);
-
     @Autowired
     private StatReviewRepository statReviewRepository;
 
-    Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
-
+    private final String GAME_ID_STR = "gameId";
+    private final String PUB_ID_STR = "pubId";
+    private final String GAME_TITLE_CONTAINS_STR = "gameTitleContains";
+    private final String PUB_NAME_CONTAINS_STR = "pubNameContains";
+    private final String SCORE_STR = "score";
+    private final String ZSCORE_STR = "zscore";
+    private final String AVG_SCORE_STR = "avgScore";
+    private final String AVG_ZSCORE_STR = "avgZscore";
+    private final String MIN_SCORE_STR = "minScore";
+    private final String MAX_SCORE_STR = "maxScore";
+    private final String MIN_ZSCORE_STR = "minZscore";
+    private final String MAX_ZSCORE_STR = "maxZscore";
+    private final String MIN_REVIEW_COUNT_STR = "minReviewCount";
+    private final String MIN_AVG_SCORE_STR = "minAvgScore";
+    private final String MAX_AVG_SCORE_STR = "maxAvgScore";
+    private final String MIN_AVG_ZSCORE_STR = "minAvgZscore";
+    private final String MAX_AVG_ZSCORE_STR = "maxAvgZscore";
+    
     Set<String> statReviewParams = new HashSet<>(Arrays.asList(
-            "gameId", "pubId", "gameTitleContains", "pubNameContains",
-            "minScore", "maxScore", "minZscore", "maxZscore"
+            GAME_ID_STR,
+            PUB_ID_STR,
+            GAME_TITLE_CONTAINS_STR,
+            PUB_NAME_CONTAINS_STR,
+            MIN_SCORE_STR,
+            MAX_SCORE_STR,
+            MIN_ZSCORE_STR,
+            MAX_ZSCORE_STR
     ));
-    Set<String> statReviewSortArgs = new HashSet<>(Arrays.asList("score", "zscore"));
-
+    Set<String> statReviewSortArgs = new HashSet<>(Arrays.asList(SCORE_STR, ZSCORE_STR));
     Set<String> statReviewGroupParams = new HashSet<>(Arrays.asList(
-            "minReviewCount", "minAvgScore", "maxAvgScore", "minAvgZscore", "maxAvgZscore"
+            MIN_REVIEW_COUNT_STR,
+            MIN_AVG_SCORE_STR,
+            MAX_AVG_SCORE_STR,
+            MIN_AVG_ZSCORE_STR,
+            MAX_AVG_ZSCORE_STR
     ));
-    Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList("avgScore", "avgZscore"));
+    Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList(AVG_SCORE_STR, AVG_ZSCORE_STR));
+
+    private static Logger logger = LogManager.getLogger(StatReviewService.class);
 
     public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
         ParamValidator.blockAllRequestParams(params);
@@ -62,140 +87,140 @@ public class StatReviewService {
         QStatReview statReview = QStatReview.statReview;
         BooleanBuilder predicate = new BooleanBuilder();
 
-        if (params.containsKey("gameId")) {
-            predicate.and(statReview.id.gameId.eq(Integer.parseInt(params.get("gameId"))));
+        if (params.containsKey(GAME_ID_STR)) {
+            predicate.and(statReview.id.gameId.eq(Integer.parseInt(params.get(GAME_ID_STR))));
         }
-        if (params.containsKey("pubId")) {
-            predicate.and(statReview.id.pubId.eq(Integer.parseInt(params.get("pubId"))));
+        if (params.containsKey(PUB_ID_STR)) {
+            predicate.and(statReview.id.pubId.eq(Integer.parseInt(params.get(PUB_ID_STR))));
         }
-        if (params.containsKey("gameTitleContains")) {
-            predicate.and(statReview.game.title.containsIgnoreCase(params.get("gameTitleContains")));
+        if (params.containsKey(GAME_TITLE_CONTAINS_STR)) {
+            predicate.and(statReview.game.title.containsIgnoreCase(params.get(GAME_TITLE_CONTAINS_STR)));
         }
-        if (params.containsKey("pubNameContains")) {
-            predicate.and(statReview.publication.name.containsIgnoreCase(params.get("pubNameContains")));
+        if (params.containsKey(PUB_NAME_CONTAINS_STR)) {
+            predicate.and(statReview.publication.name.containsIgnoreCase(params.get(PUB_NAME_CONTAINS_STR)));
         }
-        if (params.containsKey("minScore")) {
-            predicate.and(statReview.score.goe(Integer.parseInt(params.get("minScore"))));
+        if (params.containsKey(MIN_SCORE_STR)) {
+            predicate.and(statReview.score.goe(Integer.parseInt(params.get(MIN_SCORE_STR))));
         }
-        if (params.containsKey("maxScore")) {
-            predicate.and(statReview.score.loe(Integer.parseInt(params.get("maxScore"))));
+        if (params.containsKey(MAX_SCORE_STR)) {
+            predicate.and(statReview.score.loe(Integer.parseInt(params.get(MAX_SCORE_STR))));
         }
-        if (params.containsKey("minZscore")) {
-            predicate.and(statReview.zscore.goe(new BigDecimal(params.get("minZscore"))));
+        if (params.containsKey(MIN_ZSCORE_STR)) {
+            predicate.and(statReview.zscore.goe(new BigDecimal(params.get(MIN_ZSCORE_STR))));
         }
-        if (params.containsKey("maxZscore")) {
-            predicate.and(statReview.zscore.loe(new BigDecimal(params.get("maxZscore"))));
+        if (params.containsKey(MAX_ZSCORE_STR)) {
+            predicate.and(statReview.zscore.loe(new BigDecimal(params.get(MAX_ZSCORE_STR))));
         }
 
         return statReviewRepository.findAll(predicate, pageable);
     }
 
     private void validateStatReviewParamLogicRules(Map<String, String> params) {
-        if (params.containsKey("minScore")) {
-            ParamValidator.validateNumericArg("minScore", params.get("minScore"));
-            ParamValidator.validateNumericRange("minScore", params.get("minScore"), 0f, 100f);
+        if (params.containsKey(MIN_SCORE_STR)) {
+            ParamValidator.validateNumericArg(MIN_SCORE_STR, params.get(MIN_SCORE_STR));
+            ParamValidator.validateNumericRange(MIN_SCORE_STR, params.get(MIN_SCORE_STR), 0f, 100f);
         }
 
-        if (params.containsKey("maxScore")) {
-            ParamValidator.validateNumericArg("maxScore", params.get("maxScore"));
-            ParamValidator.validateNumericRange("maxScore", params.get("maxScore"), 0f, 100f);
+        if (params.containsKey(MAX_SCORE_STR)) {
+            ParamValidator.validateNumericArg(MAX_SCORE_STR, params.get(MAX_SCORE_STR));
+            ParamValidator.validateNumericRange(MAX_SCORE_STR, params.get(MAX_SCORE_STR), 0f, 100f);
         }
 
-        if (params.containsKey("minScore") && params.containsKey("maxScore")) {
+        if (params.containsKey(MIN_SCORE_STR) && params.containsKey(MAX_SCORE_STR)) {
             ParamValidator.validateMinLOEMax(
-                    "minScore",
-                    "maxScore",
-                    params.get("minScore"),
-                    params.get("maxScore")
+                    MIN_SCORE_STR,
+                    MAX_SCORE_STR,
+                    params.get(MIN_SCORE_STR),
+                    params.get(MAX_SCORE_STR)
             );
         }
 
-        if (params.containsKey("minZscore")) {
-            ParamValidator.validateNumericArg("minZscore", params.get("minZscore"));
+        if (params.containsKey(MIN_ZSCORE_STR)) {
+            ParamValidator.validateNumericArg(MIN_ZSCORE_STR, params.get(MIN_ZSCORE_STR));
         }
 
-        if (params.containsKey("maxZscore")) {
-            ParamValidator.validateNumericArg("maxZscore", params.get("maxZscore"));
+        if (params.containsKey(MAX_ZSCORE_STR)) {
+            ParamValidator.validateNumericArg(MAX_ZSCORE_STR, params.get(MAX_ZSCORE_STR));
         }
 
-        if (params.containsKey("minZscore") && params.containsKey("maxZscore")) {
+        if (params.containsKey(MIN_ZSCORE_STR) && params.containsKey(MAX_ZSCORE_STR)) {
             ParamValidator.validateMinLOEMax(
-                    "minZscore",
-                    "maxZscore",
-                    params.get("minZscore"),
-                    params.get("maxZscore")
+                    MIN_ZSCORE_STR,
+                    MAX_ZSCORE_STR,
+                    params.get(MIN_ZSCORE_STR),
+                    params.get(MAX_ZSCORE_STR)
             );
         }
     }
 
     private void validateStatReviewGroupParamLogicRules(Map<String, String> params) {
-        if (params.containsKey("minReviewCount")) {
-            ParamValidator.validateNumericArg("minReviewCount", params.get("minReviewCount"));
+        if (params.containsKey(MIN_REVIEW_COUNT_STR)) {
+            ParamValidator.validateNumericArg(MIN_REVIEW_COUNT_STR, params.get(MIN_REVIEW_COUNT_STR));
         }
 
-        if (params.containsKey("minAvgScore")) {
-            ParamValidator.validateNumericArg("minAvgScore", params.get("minAvgScore"));
-            ParamValidator.validateNumericRange("minAvgScore", params.get("minAvgScore"), 0f, 100f);
+        if (params.containsKey(MIN_AVG_SCORE_STR)) {
+            ParamValidator.validateNumericArg(MIN_AVG_SCORE_STR, params.get(MIN_AVG_SCORE_STR));
+            ParamValidator.validateNumericRange(MIN_AVG_SCORE_STR, params.get(MIN_AVG_SCORE_STR), 0f, 100f);
         }
 
-        if (params.containsKey("maxAvgScore")) {
-            ParamValidator.validateNumericArg("maxAvgScore", params.get("maxAvgScore"));
-            ParamValidator.validateNumericRange("maxAvgScore", params.get("maxAvgScore"), 0f, 100f);
+        if (params.containsKey(MAX_AVG_SCORE_STR)) {
+            ParamValidator.validateNumericArg(MAX_AVG_SCORE_STR, params.get(MAX_AVG_SCORE_STR));
+            ParamValidator.validateNumericRange(MAX_AVG_SCORE_STR, params.get(MAX_AVG_SCORE_STR), 0f, 100f);
         }
 
-        if (params.containsKey("minAvgScore") && params.containsKey("maxAvgScore")) {
+        if (params.containsKey(MIN_AVG_SCORE_STR) && params.containsKey(MAX_AVG_SCORE_STR)) {
             ParamValidator.validateMinLOEMax(
-                    "minAvgScore",
-                    "maxAvgScore",
-                    params.get("minAvgScore"),
-                    params.get("maxAvgScore")
+                    MIN_AVG_SCORE_STR,
+                    MAX_AVG_SCORE_STR,
+                    params.get(MIN_AVG_SCORE_STR),
+                    params.get(MAX_AVG_SCORE_STR)
             );
         }
 
-        if (params.containsKey("minAvgZscore")) {
-            ParamValidator.validateNumericArg("minAvgZscore", params.get("minAvgZscore"));
+        if (params.containsKey(MIN_AVG_ZSCORE_STR)) {
+            ParamValidator.validateNumericArg(MIN_AVG_ZSCORE_STR, params.get(MIN_AVG_ZSCORE_STR));
         }
 
-        if (params.containsKey("maxAvgZscore")) {
-            ParamValidator.validateNumericArg("maxAvgZscore", params.get("maxAvgZscore"));
+        if (params.containsKey(MAX_AVG_ZSCORE_STR)) {
+            ParamValidator.validateNumericArg(MAX_AVG_ZSCORE_STR, params.get(MAX_AVG_ZSCORE_STR));
         }
 
-        if (params.containsKey("minAvgZscore") && params.containsKey("maxAvgZscore")) {
+        if (params.containsKey(MIN_AVG_ZSCORE_STR) && params.containsKey(MAX_AVG_ZSCORE_STR)) {
             ParamValidator.validateMinLOEMax(
-                    "minAvgZscore",
-                    "maxAvgZscore",
-                    params.get("minAvgZscore"),
-                    params.get("maxAvgZscore")
+                    MIN_AVG_ZSCORE_STR,
+                    MAX_AVG_ZSCORE_STR,
+                    params.get(MIN_AVG_ZSCORE_STR),
+                    params.get(MAX_AVG_ZSCORE_STR)
             );
         }
     }
 
     private Map<String, Float> convertStatReviewGroupParamsWithDefaults(Map<String, String> params) {
         Map<String, Float> checkedParams = new HashMap<>();
-        if (!params.containsKey("minReviewCount")) {
-            checkedParams.put("minReviewCount", 4f);
+        if (!params.containsKey(MIN_REVIEW_COUNT_STR)) {
+            checkedParams.put(MIN_REVIEW_COUNT_STR, 4f);
         } else {
-            checkedParams.put("minReviewCount", Float.parseFloat(params.get("minReviewCount")));
+            checkedParams.put(MIN_REVIEW_COUNT_STR, Float.parseFloat(params.get(MIN_REVIEW_COUNT_STR)));
         }
-        if (!params.containsKey("minAvgScore")) {
-            checkedParams.put("minAvgScore", 0f);
+        if (!params.containsKey(MIN_AVG_SCORE_STR)) {
+            checkedParams.put(MIN_AVG_SCORE_STR, 0f);
         } else {
-            checkedParams.put("minAvgScore", Float.parseFloat(params.get("minAvgScore")));
+            checkedParams.put(MIN_AVG_SCORE_STR, Float.parseFloat(params.get(MIN_AVG_SCORE_STR)));
         }
-        if (!params.containsKey("maxAvgScore")) {
-            checkedParams.put("maxAvgScore", 100f);
+        if (!params.containsKey(MAX_AVG_SCORE_STR)) {
+            checkedParams.put(MAX_AVG_SCORE_STR, 100f);
         } else {
-            checkedParams.put("maxAvgScore", Float.parseFloat(params.get("maxAvgScore")));
+            checkedParams.put(MAX_AVG_SCORE_STR, Float.parseFloat(params.get(MAX_AVG_SCORE_STR)));
         }
-        if (!params.containsKey("minAvgZscore")) {
-            checkedParams.put("minAvgZscore", -100f); // just number that won't exclude practical min zscore in data
+        if (!params.containsKey(MIN_AVG_ZSCORE_STR)) {
+            checkedParams.put(MIN_AVG_ZSCORE_STR, -100f); // just number that won't exclude practical min zscore in data
         } else {
-            checkedParams.put("minAvgZscore", Float.parseFloat(params.get("minAvgZscore")));
+            checkedParams.put(MIN_AVG_ZSCORE_STR, Float.parseFloat(params.get(MIN_AVG_ZSCORE_STR)));
         }
-        if (!params.containsKey("maxAvgZscore")) {
-            checkedParams.put("maxAvgZscore", 100f); // just number that won't exclude practical max zscore in data
+        if (!params.containsKey(MAX_AVG_ZSCORE_STR)) {
+            checkedParams.put(MAX_AVG_ZSCORE_STR, 100f); // just number that won't exclude practical max zscore in data
         } else {
-            checkedParams.put("maxAvgZscore", Float.parseFloat(params.get("maxAvgZscore")));
+            checkedParams.put(MAX_AVG_ZSCORE_STR, Float.parseFloat(params.get(MAX_AVG_ZSCORE_STR)));
         }
         return checkedParams;
     }
@@ -208,11 +233,11 @@ public class StatReviewService {
         this.validateStatReviewGroupParamLogicRules(params);
         Map<String, Float> convertedParams = this.convertStatReviewGroupParamsWithDefaults(params);
         return statReviewRepository.findAllStatReviewsGameAggregates(
-                convertedParams.get("minReviewCount"),
-                convertedParams.get("minAvgScore"),
-                convertedParams.get("maxAvgScore"),
-                convertedParams.get("minAvgZscore"),
-                convertedParams.get("maxAvgZscore"),
+                convertedParams.get(MIN_REVIEW_COUNT_STR),
+                convertedParams.get(MIN_AVG_SCORE_STR),
+                convertedParams.get(MAX_AVG_SCORE_STR),
+                convertedParams.get(MIN_AVG_ZSCORE_STR),
+                convertedParams.get(MAX_AVG_ZSCORE_STR),
                 pageable
         );
     }
