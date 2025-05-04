@@ -28,17 +28,17 @@ public class StatReviewService {
     private final String PUB_NAME_CONTAINS_STR = "pubNameContains";
     private final String SCORE_STR = "score";
     private final String ZSCORE_STR = "zscore";
-    private final String AVG_SCORE_STR = "avgScore";
-    private final String AVG_ZSCORE_STR = "avgZscore";
+    private final String AVG_SCORE_STR = "scoreAvg";
+    private final String AVG_ZSCORE_STR = "zscoreAvg";
     private final String MIN_SCORE_STR = "minScore";
     private final String MAX_SCORE_STR = "maxScore";
     private final String MIN_ZSCORE_STR = "minZscore";
     private final String MAX_ZSCORE_STR = "maxZscore";
     private final String MIN_REVIEW_COUNT_STR = "minReviewCount";
-    private final String MIN_AVG_SCORE_STR = "minAvgScore";
-    private final String MAX_AVG_SCORE_STR = "maxAvgScore";
-    private final String MIN_AVG_ZSCORE_STR = "minAvgZscore";
-    private final String MAX_AVG_ZSCORE_STR = "maxAvgZscore";
+    private final String MIN_AVG_SCORE_STR = "minScoreAvg";
+    private final String MAX_AVG_SCORE_STR = "maxScoreAvg";
+    private final String MIN_AVG_ZSCORE_STR = "minZscoreAvg";
+    private final String MAX_AVG_ZSCORE_STR = "maxZscoreAvg";
     
     Set<String> statReviewParams = new HashSet<>(Arrays.asList(
             GAME_ID_STR,
