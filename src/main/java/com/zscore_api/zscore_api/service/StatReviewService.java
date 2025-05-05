@@ -63,33 +63,27 @@ public class StatReviewService {
     private static final Logger logger = LogManager.getLogger(StatReviewService.class);
 
     public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
+        logger.debug(String.format("gameId %s, pubId %s, args %s", gameId, pubId, params));
         ParamValidator.blockAllRequestParams(params);
         return statReviewRepository.findById(new GamePubKey(gameId, pubId));
     }
 
     public Iterable<StatReview> getStatReviewsByGameId(Integer gameId, Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("gameId %s, args %s", gameId, params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return statReviewRepository.findByIdGameId(gameId, pageable);
     }
 
     public Iterable<StatReview> getStatReviewsByPubId(Integer pubId, Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("pubId %s, args %s", pubId, params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return statReviewRepository.findByIdPubId(pubId, pageable);
     }
 
-    public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) throws IllegalArgumentException {
-
-        // log WARN
-        logger.warn("WARN TEST: method getStatReviewsByParams() was called ...");
-
-        // log INFO
-        logger.info("INFO TEST: method getStatReviewsByParams() was called ...");
-
-        // test log DEBUG
-        logger.debug("DEBUG TEST: method getStatReviewsByParams() was called ...");
-
+    public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, statReviewParams);
         this.validateStatReviewParamLogicRules(params);
@@ -236,7 +230,7 @@ public class StatReviewService {
     }
 
     public Iterable<StatReviewWithGameDTO> getAllStatReviewGameAggregates(Map<String, String> params, Pageable pageable) {
-        logger.info("getAllStatReviewGameGroupsWithAverages params: {}", params);
+        logger.debug(String.format("args %s", params));
 
         ParamValidator.validatePagingAndSortingArgs(params, statReviewGroupSortArgs);
         ParamValidator.validateDomainRequestParams(params, statReviewGroupParams);

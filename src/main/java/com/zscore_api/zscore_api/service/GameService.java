@@ -27,21 +27,20 @@ public class GameService {
     private static final Logger logger = LogManager.getLogger(GameService.class);
 
     public Iterable<Game> getAllGames(Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return gameRepository.findAll(pageable);
     }
 
     public Optional<Game> getGameById(Integer gameId, Map<String, String> params) {
+        logger.debug(String.format("gameId %s, args %s", gameId, params));
         ParamValidator.blockAllRequestParams(params);
         return gameRepository.findById(gameId);
     }
 
     public Iterable<Game> getGamesByParams(Map<String, String> params, Pageable pageable) {
-
-        // log INFO
-        logger.info("INFO TEST - method getGamesByParams() was called ...");
-
+        logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, validRequestParams);
         this.validateRequestParamLogicRules(params);
