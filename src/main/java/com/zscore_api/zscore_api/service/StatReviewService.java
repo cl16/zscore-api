@@ -9,7 +9,6 @@ import com.zscore_api.zscore_api.key.GamePubKey;
 import com.zscore_api.zscore_api.repository.StatReviewRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,7 +60,7 @@ public class StatReviewService {
     ));
     Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList(AVG_SCORE_STR, AVG_ZSCORE_STR));
 
-    private static final Logger logger = LogManager.getLogger(StatReviewService.class);
+    private static final Logger logger = LogManager.getLogger("customClassLogger");
 
     public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
         ParamValidator.blockAllRequestParams(params);
