@@ -60,7 +60,7 @@ public class StatReviewService {
     ));
     Set<String> statReviewGroupSortArgs = new HashSet<>(Arrays.asList(AVG_SCORE_STR, AVG_ZSCORE_STR));
 
-    private static final Logger logger = LogManager.getLogger("customClassLogger");
+    private static final Logger logger = LogManager.getLogger(StatReviewService.class);
 
     public Optional<StatReview> getStatReviewById(Integer gameId, Integer pubId, Map<String, String> params) {
         ParamValidator.blockAllRequestParams(params);

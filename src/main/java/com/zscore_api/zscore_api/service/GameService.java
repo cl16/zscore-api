@@ -24,7 +24,7 @@ public class GameService {
     Set<String> validRequestParams = new HashSet<>(Arrays.asList(TITLE_STR, TITLE_CONTAINS_STR));
     Set<String> sortArgs = new HashSet<>(Arrays.asList(ID_STR, TITLE_STR));
 
-    private static final Logger logger = LogManager.getLogger("customClassLogger");
+    private static final Logger logger = LogManager.getLogger(GameService.class);
 
     public Iterable<Game> getAllGames(Map<String, String> params, Pageable pageable) {
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
