@@ -3,6 +3,8 @@ package com.zscore_api.zscore_api.controller;
 import com.zscore_api.zscore_api.entity.Review;
 import com.zscore_api.zscore_api.record.GameAverageScore;
 import com.zscore_api.zscore_api.service.ReviewService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,11 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
+    private static final Logger logger = LogManager.getLogger(ReviewService.class);
+
     @GetMapping(path="/all")
     public ResponseEntity<Iterable<Review>> getAllReviews() {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Review> result = reviewService.getAllReviews();
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -30,6 +35,7 @@ public class ReviewController {
 
     @GetMapping(path="/game/{gameId}")
     public ResponseEntity<Iterable<Review>> getReviewsByGameId(@PathVariable(value="gameId") Integer gameId) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Review> result = reviewService.getReviewsByGameId(gameId);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -40,6 +46,7 @@ public class ReviewController {
 
     @GetMapping(path="/game/title/{gameTitle}")
     public ResponseEntity<Iterable<Review>> getReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Review> result = reviewService.getReviewsByGameTitle(gameTitle);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -50,6 +57,7 @@ public class ReviewController {
 
     @GetMapping(path="/game/byAverageScore")
     public ResponseEntity<Iterable<GameAverageScore>> getGamesByAverageScore() {
+        logger.debug(" [ REQUEST RECEIVED ]");
         return new ResponseEntity<>(reviewService.getAllGamesByAverageScore(), HttpStatus.OK);
     }
 }

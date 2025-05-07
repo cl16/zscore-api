@@ -2,6 +2,8 @@ package com.zscore_api.zscore_api.controller;
 
 import com.zscore_api.zscore_api.entity.Game;
 import com.zscore_api.zscore_api.service.GameService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,11 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
+    private static final Logger logger = LogManager.getLogger(GameController.class);
+
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Game>> getAllGames(@RequestParam Map<String, String> params,Pageable pageable) {
+    public ResponseEntity<Iterable<Game>> getAllGames(@RequestParam Map<String, String> params, Pageable pageable) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Game> result = gameService.getAllGames(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -31,6 +36,7 @@ public class GameController {
 
     @GetMapping(path="/{gameId}")
     public ResponseEntity<Optional<Game>> getGameById(@PathVariable(value="gameId") Integer gameId, @RequestParam Map<String, String> params) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Optional<Game> result = gameService.getGameById(gameId, params);
         if (result.isPresent()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -41,6 +47,7 @@ public class GameController {
 
     @GetMapping(path="")
     public ResponseEntity getGamesByParams(@RequestParam Map<String, String> params, Pageable pageable) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Game> result = gameService.getGamesByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);

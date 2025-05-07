@@ -5,6 +5,8 @@ import com.zscore_api.zscore_api.entity.QPublication;
 import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.repository.PublicationRepository;
 import com.zscore_api.zscore_api.entity.Publication;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,18 +39,23 @@ public class PublicationService {
     ));
     Set<String> sortArgs = new HashSet<>(Arrays.asList(NAME_STR, SCORE_AVG_STR, SCORE_STD_STR));
 
+    private static final Logger logger = LogManager.getLogger(PublicationService.class);
+
     public Iterable<Publication> getAllPublications(Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return publicationRepository.findAll(pageable);
     }
 
     public Optional<Publication> getPublicationById(Integer id, Map<String, String> params) {
+        logger.debug(String.format("id %s, args %s", id, params));
         ParamValidator.blockAllRequestParams(params);
         return publicationRepository.findById(id);
     }
 
     public Iterable<Publication> getPublicationsByParams(Map<String, String> params, Pageable pageable) {
+        logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, validRequestParams);
         this.validateRequestParamLogicRules(params);

@@ -2,6 +2,8 @@ package com.zscore_api.zscore_api.controller;
 
 import com.zscore_api.zscore_api.entity.Stat;
 import com.zscore_api.zscore_api.service.StatService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +19,17 @@ public class StatController {
     @Autowired
     private StatService statService;
 
+    private static final Logger logger = LogManager.getLogger(StatService.class);
+
     @GetMapping(path="/all")
     public ResponseEntity<Iterable<Stat>> getAllStats() {
+        logger.debug(" [ REQUEST RECEIVED ]");
         return new ResponseEntity<>(statService.getAllStats(), HttpStatus.OK);
     }
 
     @GetMapping(path="/game/{gameId}")
     public ResponseEntity<Iterable<Stat>> getStatsByGameId(@PathVariable(value="gameId") Integer gameId) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Stat> result = statService.getStatsByGameId(gameId);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -34,6 +40,7 @@ public class StatController {
 
     @GetMapping(path="/game/title/{gameTitle}")
     public ResponseEntity<Iterable<Stat>> getStatsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+        logger.debug(" [ REQUEST RECEIVED ]");
         Iterable<Stat> result = statService.getStatsByGameTitle(gameTitle);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
