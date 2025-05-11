@@ -1,5 +1,7 @@
 ## My Additions
 .env
+logs/
+.DS_Store
 
 ## Auto-Added
 HELP.md
