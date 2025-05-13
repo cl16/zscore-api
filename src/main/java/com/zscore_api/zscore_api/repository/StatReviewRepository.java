@@ -3,6 +3,7 @@ package com.zscore_api.zscore_api.repository;
 import com.zscore_api.zscore_api.entity.StatReview;
 import com.zscore_api.zscore_api.entity.StatReviewWithGameDTO;
 import com.zscore_api.zscore_api.key.GamePubKey;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +19,9 @@ public interface StatReviewRepository extends
         JpaRepository<StatReview, GamePubKey>,
         PagingAndSortingRepository<StatReview, GamePubKey> {
 
-    List<StatReview> findByIdGameId(Integer gameId, Pageable pageable);
+    Page<StatReview> findByIdGameId(Integer gameId, Pageable pageable);
 
-    List<StatReview> findByIdPubId(Integer pubId, Pageable pageable);
+    Page<StatReview> findByIdPubId(Integer pubId, Pageable pageable);
 
     @Query(
             value = """
@@ -33,7 +34,7 @@ public interface StatReviewRepository extends
             """,
             nativeQuery = true
     )
-    List<StatReviewWithGameDTO> findAllStatReviewsGameAggregates(
+    Page<StatReviewWithGameDTO> findAllStatReviewsGameAggregates(
             Float minReviewCount,
             Float minScoreAvg,
             Float maxScoreAvg,

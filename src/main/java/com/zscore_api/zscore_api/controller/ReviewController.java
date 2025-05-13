@@ -6,6 +6,8 @@ import com.zscore_api.zscore_api.service.ReviewService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,9 +25,9 @@ public class ReviewController {
     private static final Logger logger = LogManager.getLogger(ReviewService.class);
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Review>> getAllReviews() {
+    public ResponseEntity<Page<Review>> getAllReviews(Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Review> result = reviewService.getAllReviews();
+        Page<Review> result = reviewService.getAllReviews(pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -34,9 +36,9 @@ public class ReviewController {
     }
 
     @GetMapping(path="/game/{gameId}")
-    public ResponseEntity<Iterable<Review>> getReviewsByGameId(@PathVariable(value="gameId") Integer gameId) {
+    public ResponseEntity<Page<Review>> getReviewsByGameId(@PathVariable(value="gameId") Integer gameId, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Review> result = reviewService.getReviewsByGameId(gameId);
+        Page<Review> result = reviewService.getReviewsByGameId(gameId, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -45,9 +47,9 @@ public class ReviewController {
     }
 
     @GetMapping(path="/game/title/{gameTitle}")
-    public ResponseEntity<Iterable<Review>> getReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+    public ResponseEntity<Page<Review>> getReviewsByGameTitle(@PathVariable(value="gameTitle") String gameTitle, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Review> result = reviewService.getReviewsByGameTitle(gameTitle);
+        Page<Review> result = reviewService.getReviewsByGameTitle(gameTitle, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -56,8 +58,8 @@ public class ReviewController {
     }
 
     @GetMapping(path="/game/byAverageScore")
-    public ResponseEntity<Iterable<GameAverageScore>> getGamesByAverageScore() {
+    public ResponseEntity<Page<GameAverageScore>> getGamesByAverageScore(Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        return new ResponseEntity<>(reviewService.getAllGamesByAverageScore(), HttpStatus.OK);
+        return new ResponseEntity<>(reviewService.getAllGamesByAverageScore(pageable), HttpStatus.OK);
     }
 }

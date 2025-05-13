@@ -5,6 +5,7 @@ import com.zscore_api.zscore_api.service.GameService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,9 @@ public class GameController {
     private static final Logger logger = LogManager.getLogger(GameController.class);
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Game>> getAllGames(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity<Page<Game>> getAllGames(@RequestParam Map<String, String> params, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Game> result = gameService.getAllGames(params, pageable);
+        Page<Game> result = gameService.getAllGames(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -46,9 +47,9 @@ public class GameController {
     }
 
     @GetMapping(path="")
-    public ResponseEntity getGamesByParams(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity<Page<Game>> getGamesByParams(@RequestParam Map<String, String> params, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Game> result = gameService.getGamesByParams(params, pageable);
+        Page<Game> result = gameService.getGamesByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

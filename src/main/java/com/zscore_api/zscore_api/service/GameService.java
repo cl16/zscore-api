@@ -6,6 +6,7 @@ import com.zscore_api.zscore_api.entity.Game;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class GameService {
 
     private static final Logger logger = LogManager.getLogger(GameService.class);
 
-    public Iterable<Game> getAllGames(Map<String, String> params, Pageable pageable) {
+    public Page<Game> getAllGames(Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
@@ -39,7 +40,7 @@ public class GameService {
         return gameRepository.findById(gameId);
     }
 
-    public Iterable<Game> getGamesByParams(Map<String, String> params, Pageable pageable) {
+    public Page<Game> getGamesByParams(Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, sortArgs);
         ParamValidator.validateDomainRequestParams(params, validRequestParams);

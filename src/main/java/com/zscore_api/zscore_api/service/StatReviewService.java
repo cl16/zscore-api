@@ -10,6 +10,7 @@ import com.zscore_api.zscore_api.repository.StatReviewRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -68,21 +69,21 @@ public class StatReviewService {
         return statReviewRepository.findById(new GamePubKey(gameId, pubId));
     }
 
-    public Iterable<StatReview> getStatReviewsByGameId(Integer gameId, Map<String, String> params, Pageable pageable) {
+    public Page<StatReview> getStatReviewsByGameId(Integer gameId, Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("gameId %s, args %s", gameId, params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return statReviewRepository.findByIdGameId(gameId, pageable);
     }
 
-    public Iterable<StatReview> getStatReviewsByPubId(Integer pubId, Map<String, String> params, Pageable pageable) {
+    public Page<StatReview> getStatReviewsByPubId(Integer pubId, Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("pubId %s, args %s", pubId, params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, new HashSet<>());
         return statReviewRepository.findByIdPubId(pubId, pageable);
     }
 
-    public Iterable<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) {
+    public Page<StatReview> getStatReviewsByParams(Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("args %s", params));
         ParamValidator.validatePagingAndSortingArgs(params, statReviewSortArgs);
         ParamValidator.validateDomainRequestParams(params, statReviewParams);
@@ -229,7 +230,7 @@ public class StatReviewService {
         return checkedParams;
     }
 
-    public Iterable<StatReviewWithGameDTO> getAllStatReviewGameAggregates(Map<String, String> params, Pageable pageable) {
+    public Page<StatReviewWithGameDTO> getAllStatReviewGameAggregates(Map<String, String> params, Pageable pageable) {
         logger.debug(String.format("args %s", params));
 
         ParamValidator.validatePagingAndSortingArgs(params, statReviewGroupSortArgs);

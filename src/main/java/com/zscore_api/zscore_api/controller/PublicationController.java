@@ -5,6 +5,7 @@ import com.zscore_api.zscore_api.service.PublicationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,9 @@ public class PublicationController {
     private static final Logger logger = LogManager.getLogger(PublicationService.class);
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Publication>> getAllPublications(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity<Page<Publication>> getAllPublications(@RequestParam Map<String, String> params, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Publication> result = publicationService.getAllPublications(params, pageable);
+        Page<Publication> result = publicationService.getAllPublications(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -49,9 +50,9 @@ public class PublicationController {
     }
 
     @GetMapping(path="")
-    public ResponseEntity getPublicationsByParams(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity<Page<Publication>> getPublicationsByParams(@RequestParam Map<String, String> params, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Publication> result = publicationService.getPublicationsByParams(params, pageable);
+        Page<Publication> result = publicationService.getPublicationsByParams(params, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

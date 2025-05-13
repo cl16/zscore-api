@@ -4,6 +4,8 @@ import com.zscore_api.zscore_api.record.GameAverageScore;
 import com.zscore_api.zscore_api.repository.ReviewRepository;
 import com.zscore_api.zscore_api.entity.Review;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,19 +16,19 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public Iterable<Review> getAllReviews() {
-        return reviewRepository.findAll();
+    public Page<Review> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
     }
 
-    public Iterable<Review> getReviewsByGameId(Integer gameId) {
-        return reviewRepository.findByIdGameId(gameId);
+    public Page<Review> getReviewsByGameId(Integer gameId, Pageable pageable) {
+        return reviewRepository.findByIdGameId(gameId, pageable);
     }
 
-    public Iterable<Review> getReviewsByGameTitle(String gameTitle) {
-        return reviewRepository.findByGameTitle(gameTitle);
+    public Page<Review> getReviewsByGameTitle(String gameTitle, Pageable pageable) {
+        return reviewRepository.findByGameTitle(gameTitle, pageable);
     }
 
-    public List<GameAverageScore> getAllGamesByAverageScore() {
-        return reviewRepository.findAllGamesByAverageScore();
+    public Page<GameAverageScore> getAllGamesByAverageScore(Pageable pageable) {
+        return reviewRepository.findAllGamesByAverageScore(pageable);
     }
 }

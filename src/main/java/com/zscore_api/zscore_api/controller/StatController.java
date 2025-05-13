@@ -5,6 +5,8 @@ import com.zscore_api.zscore_api.service.StatService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,15 +24,15 @@ public class StatController {
     private static final Logger logger = LogManager.getLogger(StatService.class);
 
     @GetMapping(path="/all")
-    public ResponseEntity<Iterable<Stat>> getAllStats() {
+    public ResponseEntity<Page<Stat>> getAllStats(Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        return new ResponseEntity<>(statService.getAllStats(), HttpStatus.OK);
+        return new ResponseEntity<>(statService.getAllStats(pageable), HttpStatus.OK);
     }
 
     @GetMapping(path="/game/{gameId}")
-    public ResponseEntity<Iterable<Stat>> getStatsByGameId(@PathVariable(value="gameId") Integer gameId) {
+    public ResponseEntity<Page<Stat>> getStatsByGameId(@PathVariable(value="gameId") Integer gameId, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Stat> result = statService.getStatsByGameId(gameId);
+        Page<Stat> result = statService.getStatsByGameId(gameId, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
@@ -39,9 +41,9 @@ public class StatController {
     }
 
     @GetMapping(path="/game/title/{gameTitle}")
-    public ResponseEntity<Iterable<Stat>> getStatsByGameTitle(@PathVariable(value="gameTitle") String gameTitle) {
+    public ResponseEntity<Page<Stat>> getStatsByGameTitle(@PathVariable(value="gameTitle") String gameTitle, Pageable pageable) {
         logger.debug(" [ REQUEST RECEIVED ]");
-        Iterable<Stat> result = statService.getStatsByGameTitle(gameTitle);
+        Page<Stat> result = statService.getStatsByGameTitle(gameTitle, pageable);
         if (result.iterator().hasNext()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
