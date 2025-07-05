@@ -1,5 +1,7 @@
 package com.zscore_api.zscore_api.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.zscore_api.zscore_api.entity.QGame;
 import com.zscore_api.zscore_api.helper.ParamValidator;
 import com.zscore_api.zscore_api.repository.GameRepository;
 import com.zscore_api.zscore_api.entity.Game;
@@ -46,11 +48,14 @@ public class GameService {
         ParamValidator.validateDomainRequestParams(params, validRequestParams);
         this.validateRequestParamLogicRules(params);
 
-        if (params.containsKey(TITLE_STR)) {
-            return gameRepository.findByTitle(params.get(TITLE_STR), pageable);
-        } else {
-            return gameRepository.findByTitleContains(params.get(TITLE_CONTAINS_STR), pageable);
+        QGame game = QGame.game;
+        BooleanBuilder predicate = new BooleanBuilder();
+
+        if (params.containsKey(TITLE_CONTAINS_STR)) {
+            predicate.and(game.title.containsIgnoreCase(params.get(TITLE_CONTAINS_STR)));
         }
+
+        return gameRepository.findAll(predicate, pageable);
     }
 
     private void validateRequestParamLogicRules(Map<String, String> params) {
