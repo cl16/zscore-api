@@ -17,7 +17,7 @@ public class ParamValidator {
 
     private static final Set<String> pagingAndSortingParams = new HashSet<>(Arrays.asList("page", "size", "sort"));
     private static final String pageArgPatternString = "0|[1-9][0-9]*";
-    private static final String sortArgPatternString = "([a-zA-Z]+)(,(?:asc|desc))?";
+    private static final String sortArgPatternString = "([a-zA-Z_]+)(,(?:asc|desc))?";
     private static final String integerPatternString = "^-?[0-9]+$";
     private static final String numericPatternString = "^-?[0-9]+\\.?[0-9]*$";
 
@@ -49,13 +49,6 @@ public class ParamValidator {
             if (!sortArgMatcher.matches()) {
                 logger.debug(String.format("size arg %s does not match pattern", params.get("sort")));
                 throw new IllegalArgumentException("Invalid request arguments: sort argument must be '[column],[asc or desc]'");
-            }
-            String sortColumn = sortArgMatcher.group(1);
-
-            if (!validSortArgs.contains(sortColumn)) {
-                logger.debug(String.format("sort arg %s not a valid sort column", params.get(sortColumn)));
-                throw new IllegalArgumentException("Invalid request arguments: unexpected sort column provided, expected 1 of " +
-                        String.join(", ", validSortArgs));
             }
         }
     }
